@@ -14,7 +14,7 @@ app.use(express.json());
 
 
 try {
-    const conStr = 'mongodb+srv://admin:admin123@cluster0.jyogidx.mongodb.net/task?appName=Cluster0';
+    const conStr = 'mongodb+srv://admin:admin123@fullstack.5m4vetd.mongodb.net/users?appName=FullStack';
     mongoose.connect(conStr);
     console.log('database is connected!! HAPPY BIRTHDAY.... TO ME')
 }
