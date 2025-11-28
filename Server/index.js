@@ -88,7 +88,7 @@ app.delete("/deleteData/:delID",async(req,res)=>{
 
     const findAndDelete=await User_model.findByIdAndDelete(req.body._id)
 
-    res.send(findAndDelete) //Send filtered data to client
+    res.send(findAndDelete) //Send filtered object to client
 
 })
 
