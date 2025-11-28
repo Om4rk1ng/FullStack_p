@@ -74,10 +74,15 @@ app.post("/register", async (req, res) => {
 
 app.get("/displayData",async(req,res)=>{
 
+    try{
 
-    const data=await User_model.find({})
+    const data=await User_model.find({}) //get all records
     
-    res.send(data) //data sent as response to user
+    res.status(200).send(data) //data sent as response to user
+    }catch(err){
+        res.status(401).send("Error "+err)
+    }
+
 
 
 })
@@ -86,9 +91,9 @@ app.get("/displayData",async(req,res)=>{
 app.delete("/deleteData/:delID",async(req,res)=>{
 
 
-    const findAndDelete=await User_model.findByIdAndDelete(req.body._id)
+    const findUserByIDAndDelete=await User_model.findByIdAndDelete(req.body._id)
 
-    res.send(findAndDelete) //Send filtered object to client
+    res.send(findUserByIDAndDelete) //Send filtered object to client
 
 })
 
