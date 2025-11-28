@@ -16,7 +16,7 @@ app.use(express.json());
 try {
     const conStr = 'mongodb+srv://admin:admin123@cluster0.jyogidx.mongodb.net/task?appName=Cluster0';
     mongoose.connect(conStr);
-    console.log('database is jonnected')
+    console.log('database is connected!! HAPPY BIRTHDAY.... TO ME')
 }
 catch (error) {
     console.log(error);
@@ -53,6 +53,7 @@ app.post("/register", async (req, res) => {
 
         const {name, email, password } = req.body;
         const hash_password = await bcrypt.hash(password, 10);
+
         const user = await User_model.findOne({ email: email });
 
         if (!user) {
@@ -71,6 +72,20 @@ app.post("/register", async (req, res) => {
         res.send(error);
     }
 });
+
+
+app.get("/displayData",async(req,res)=>{
+
+
+    const data=await User_model.find({})
+    
+    res.send(data) //data sent as response to user
+
+
+})
+
+
+
 
 
 app.listen(5000, () => {
