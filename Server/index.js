@@ -14,7 +14,7 @@ app.use(express.json());
 
 
 try {
-    const conStr = 'mongodb+srv://admin:admin123@cluster0.jyogidx.mongodb.net/task?appName=Cluster0';
+    const conStr = 'mongodb+srv://admin:<db_password>@trackerdb.g7wlxwu.mongodb.net/?appName=TrackerDB';
     mongoose.connect(conStr);
     console.log('database is jonnected')
 }
