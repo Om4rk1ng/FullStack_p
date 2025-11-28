@@ -16,13 +16,11 @@ app.use(express.json());
 try {
     const conStr = 'mongodb+srv://admin:admin123@fullstack.5m4vetd.mongodb.net/user';
     mongoose.connect(conStr);
-    console.log('database is connected!! HAPPY BIRTHDAY.... TO ME')
+    console.log('database is connected!!')
 }
 catch (error) {
     console.log(error);
 }
-
-
 
 app.post('/login', async (req, res) => {
 
