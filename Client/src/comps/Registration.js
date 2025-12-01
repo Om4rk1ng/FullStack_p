@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button, Form, FormGroup, Label, Input } from "reactstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import LoginImage from "./images/Cover.png";
@@ -13,6 +14,8 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const navigate = useNavigate();
+
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("First Name:", firstName);
@@ -22,7 +25,12 @@ export default function Login() {
     console.log("Password:", password);
     console.log("Confirm Password:", confirmPassword);
 
-    // Add registration logic here
+    // Save to localStorage
+    localStorage.setItem("firstName", firstName);
+    localStorage.setItem("lastName", lastName);
+
+    // Navigate to home
+    navigate("/home");
   };
 
   return (

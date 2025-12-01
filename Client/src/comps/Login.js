@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button, Form, FormGroup, Label, Input } from "reactstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import LoginImage from "./images/Cover.png";
@@ -8,17 +9,20 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const navigate = useNavigate();
+
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Email:", email);
     console.log("Password:", password);
     // Add login logic here
+    navigate("/home");
   };
 
   return (
     <div className="login-page d-flex align-items-center justify-content-center">
       <div className="login-card shadow-lg rounded overflow-hidden row">
-        
+
         {/* Left Image */}
         <div className="col-md-6 d-none d-md-block p-0">
           <img
