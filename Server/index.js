@@ -99,7 +99,7 @@ app.delete("/deleteData/:delID",async(req,res)=>{
 
 
 
-//update data
+//UPDATE data
 app.put("/update/:updateID",async(req,res)=>{
 
 
