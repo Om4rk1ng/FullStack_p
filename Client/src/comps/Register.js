@@ -1,37 +1,61 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Form, FormGroup, Label, Input } from "reactstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import LoginImage from "./images/Cover.png";
+import {useDispatch} from "react-redux"
 import RegsterImage from "./images/purple.jpg"
+import {yupResolver} from "@hookform/resolvers/yup"
+import {register,useForm} from "react-hook-form"
+import {RegisterDataThunk} from "../features/slice.js"
+import regValidation from "../Validation/validation.js";
 import "./Login.css";
 
-export default function Login() {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+export default function Register() {
+
+
+//UPDATED
+
+
+
+
+  const [firstName, setFirstName] = useState();
+
+  const [email, setEmail] = useState();
+  const [password, setPassword] = useState();
 
   const navigate = useNavigate();
+  const dispatch=useDispatch()
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("First Name:", firstName);
-    console.log("Last Name:", lastName);
-    console.log("Phone:", phone);
-    console.log("Email:", email);
-    console.log("Password:", password);
-    console.log("Confirm Password:", confirmPassword);
+  
+
+    const newUserRegisterData={
+
+      _username:firstName,
+      _email:email,
+      _password:password
+    
+    }
+
+    dispatch(RegisterDataThunk(newUserRegisterData))
 
     // Save to localStorage
-    localStorage.setItem("firstName", firstName);
-    localStorage.setItem("lastName", lastName);
+    //navigate to inspect>Application>LocalStorage>Click the dropdown List
+  
+
 
     // Navigate to home
     navigate("/home");
   };
+
+
+
+    //   const { register, handleSubmit: handleRegister, formState: { errors } } = useForm(
+    //     {
+    //         resolver: yupResolver(regValidation)
+    //     }
+    // )
 
   return (
     <div className="login-page d-flex align-items-center justify-content-center">
@@ -58,34 +82,14 @@ export default function Login() {
                 <Label for="firstName">First Name</Label>
                 <Input
                   type="text"
-                  id="firstName"
                   placeholder=""
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                />
+                  onChange={(e) => setFirstName(e.target.value)}/>
+
               </FormGroup>
 
-              <FormGroup>
-                <Label for="lastName">Last Name</Label>
-                <Input
-                  type="text"
-                  id="lastName"
-                  placeholder=""
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                />
-              </FormGroup>
+          
 
-              <FormGroup>
-                <Label for="phone">Phone Number</Label>
-                <Input
-                  type="text"
-                  id="phone"
-                  placeholder=""
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                />
-              </FormGroup>
+          
 
               <FormGroup>
                 <Label for="email">Email</Label>
@@ -93,9 +97,9 @@ export default function Login() {
                   type="email"
                   id="email"
                   placeholder=""
-                  value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
+
               </FormGroup>
 
               <FormGroup>
@@ -104,23 +108,14 @@ export default function Login() {
                   type="password"
                   id="password"
                   placeholder=""
-                  value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
+
               </FormGroup>
 
-              <FormGroup>
-                <Label for="confirmPassword">Confirm Password</Label>
-                <Input
-                  type="password"
-                  id="confirmPassword"
-                  placeholder=""
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                />
-              </FormGroup>
+             
 
-              <Button color="primary" block className="mb-3">
+              <Button  type="submit" color="primary" block className="mb-3">
                 Register
               </Button>
 

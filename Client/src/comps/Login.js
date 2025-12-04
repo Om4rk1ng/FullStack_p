@@ -1,21 +1,37 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Form, FormGroup, Label, Input } from "reactstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import LoginImage from "./images/Cover.png";
+import { useSelector } from "react-redux";
+import { LoginThunk } from "../features/slice";
+import { useDispatch } from "react-redux";
+
 import "./Login.css"; // We'll add some custom CSS here
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  
+const messageSelector=useSelector((state)=>state.TaskStore.msg)
 
   const navigate = useNavigate();
 
+
+
+  const dispatch=useDispatch()
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Email:", email);
-    console.log("Password:", password);
+
     // Add login logic here
+    const userLoginData={
+      _userLoginEmail:email,
+      _userLoginPassword:password
+    }
+    console.log(messageSelector)
+    dispatch(LoginThunk(userLoginData))
+    if(messageSelector=="Login successful")
     navigate("/home");
   };
 
@@ -65,6 +81,8 @@ export default function Login() {
               <Button color="primary" block className="mb-3">
                 Login
               </Button>
+
+              <span>{messageSelector}</span>
 
               <div className="text-center">
                 <span>Don't have an account? </span>

@@ -1,10 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
-import TaskTrackSlice from "./slice.js"
+import TaskTrackSlice from "./slice"
 
-export const TaskTrackStore=configureStore({
+const TaskTrackStore=configureStore({
 
 reducer:{
-    TaskTrackStoreReducer:TaskTrackSlice
+    TaskStore:TaskTrackSlice
 }
 
 })
+
+
+export default TaskTrackStore

@@ -25,23 +25,23 @@ catch (error) {
 app.post('/login', async (req, res) => {
 
     try {
-        const user = await User_model.findOne({ Email: req.body.email });
+        const user = await User_model.findOne({ Email: req.body._userLoginEmail });
 
         if (!user) {
-            return res.status(404).json({ message: "User not found" });
+            res.json({ message: "User not found" });
         }
 
-        const pwd_match = await bcrypt.compare(req.body.password, user.Password);
+        const pwd_match = await bcrypt.compare(req.body._userLoginPassword, user.Password);
 
         if (!pwd_match) {
-            return res.status(401).json({ message: "Invalid email or password" });
+             res.json({ message: "Invalid email or password" });
         }
 
-        res.status(200).json({ user: user, message: "Login successful" });
+        res.json({ message: "Login successful" });
 
     } catch (error) {
         console.error(error);
-        res.status(500).send({ message: "Server error" });
+        res.json({ message: "Server error" });
     }
 });
 
@@ -49,80 +49,78 @@ app.post('/login', async (req, res) => {
 app.post("/register", async (req, res) => {
     try {
 
-        const {name, Email, Password } = req.body; //Issue was here. FOR NOW, leave it
-        const hash_password = await bcrypt.hash(Password, 10);
+        const hash_password = await bcrypt.hash(req.body._password, 10);
 
-        const user = await User_model.findOne({ Email: Email });
+        const user = await User_model.findOne({ Email:req.body._email });
 
         if (!user) {
-            const new_user = new User_model({
-                name: name,
-                Email: Email,
+            const new_user ={
+                name:req.body._username,
+                Email: req.body._email,
                 Password: hash_password,
-            });
+            };
 
             await User_model.create(new_user);
-            res.send({message:"user Added!!"});
+            res.json({message:"user Added!!"});
         } else {
             res.status(500).json({ message: "User already exists..." });
         }
     } catch (error) {
-        res.send(error);
+    console.log(error)
     }
 });
 
 
-app.get("/displayData",async(req,res)=>{
+// app.get("/displayData",async(req,res)=>{
 
-    try{
+//     try{
 
-    const data=await User_model.find({}) //get all records
+//     const data=await User_model.find({}) //get all records
     
-    res.status(200).send(data) //data sent as response to user
-    }catch(err){
-        res.status(401).send("Error "+err)
-    }
+//     res.status(200).send(data) //data sent as response to user
+//     }catch(err){
+//         res.status(401).send("Error "+err)
+//     }
 
 
 
-})
+// })
+
+// app.delete("/deleteData/:delID",async(req,res)=>{
 
 
-app.delete("/deleteData/:delID",async(req,res)=>{
+//     const findUserByIDAndDelete=await User_model.findByIdAndDelete(req.params.delID)
 
+//     res.send(findUserByIDAndDelete) //Send filtered object to client
 
-    const findUserByIDAndDelete=await User_model.findByIdAndDelete(req.params.delID)
-
-    res.send(findUserByIDAndDelete) //Send filtered object to client
-
-})
+// })
 
 
 
 //UPDATE data
-app.put("/update/:updateID",async(req,res)=>{
+// app.put("/update/:updateID",async(req,res)=>{
 
 
-try{
-    const hash_password=await bcrypt.hash(req.body.Password)
+// try{
+//     const hash_password=await bcrypt.hash(req.body.Password)
 
-    const findByIDAndUpdate=await User_model.findByIdAndUpdate(req.params.updateID,{
-        name:req.body.name,
-        Email:req.body.Email,
-        Password:hash_password
-    })
+//     const findByIDAndUpdate=await User_model.findByIdAndUpdate(req.params.updateID,{
+//         name:req.body.name,
+//         Email:req.body.Email,
+//         Password:hash_password
+//     })
 
-    res.send(findByIDAndUpdate)
-
-
-}catch(err){
-
-    console.log("Error "+err)
-}
+//     res.send(findByIDAndUpdate)
 
 
-})
+// }catch(err){
 
-app.listen(5000, () => {
-    console.log('server connected at port 5000 ...')
+//     console.log("Error "+err)
+// }
+
+
+// })
+
+app.listen(7500, () => {
+    console.log('server connected at port 7500 ...')
 })
