@@ -14,7 +14,7 @@ app.use(express.json());
 
 
 try {
-    const conStr = 'mongodb+srv://admin:admin123@fullstack.5m4vetd.mongodb.net/user';
+    const conStr = 'mongodb+srv://admin:admin123@fullstack.5m4vetd.mongodb.net/users';
     mongoose.connect(conStr);
     console.log('database is connected!!')
 }
@@ -25,13 +25,13 @@ catch (error) {
 app.post('/login', async (req, res) => {
 
     try {
-        const user = await User_model.findOne({ email: req.body.email });
+        const user = await User_model.findOne({ Email: req.body.email });
 
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
 
-        const pwd_match = await bcrypt.compare(req.body.password, user.password);
+        const pwd_match = await bcrypt.compare(req.body.password, user.Password);
 
         if (!pwd_match) {
             return res.status(401).json({ message: "Invalid email or password" });
@@ -41,7 +41,7 @@ app.post('/login', async (req, res) => {
 
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "Server error" });
+        res.status(500).send({ message: "Server error" });
     }
 });
 
@@ -49,20 +49,20 @@ app.post('/login', async (req, res) => {
 app.post("/register", async (req, res) => {
     try {
 
-        const {name, email, password } = req.body;
-        const hash_password = await bcrypt.hash(password, 10);
+        const {name, Email, Password } = req.body; //Issue was here. FOR NOW, leave it
+        const hash_password = await bcrypt.hash(Password, 10);
 
-        const user = await User_model.findOne({ email: email });
+        const user = await User_model.findOne({ Email: Email });
 
         if (!user) {
             const new_user = new User_model({
                 name: name,
-                email: email,
-                password: hash_password,
+                Email: Email,
+                Password: hash_password,
             });
 
-            await new_user.save();
-            res.send({ message: "User Added..." });
+            await User_model.create(new_user);
+            res.send({message:"user Added!!"});
         } else {
             res.status(500).json({ message: "User already exists..." });
         }
@@ -91,7 +91,7 @@ app.get("/displayData",async(req,res)=>{
 app.delete("/deleteData/:delID",async(req,res)=>{
 
 
-    const findUserByIDAndDelete=await User_model.findByIdAndDelete(req.body._id)
+    const findUserByIDAndDelete=await User_model.findByIdAndDelete(req.params.delID)
 
     res.send(findUserByIDAndDelete) //Send filtered object to client
 
@@ -99,6 +99,29 @@ app.delete("/deleteData/:delID",async(req,res)=>{
 
 
 
+//update data
+app.put("/update/:updateID",async(req,res)=>{
+
+
+try{
+    const hash_password=await bcrypt.hash(req.body.Password)
+
+    const findByIDAndUpdate=await User_model.findByIdAndUpdate(req.params.updateID,{
+        name:req.body.name,
+        Email:req.body.Email,
+        Password:hash_password
+    })
+
+    res.send(findByIDAndUpdate)
+
+
+}catch(err){
+
+    console.log("Error "+err)
+}
+
+
+})
 
 app.listen(5000, () => {
     console.log('server connected at port 5000 ...')
