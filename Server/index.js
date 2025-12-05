@@ -37,7 +37,7 @@ app.post('/login', async (req, res) => {
        const pwd_match = await bcrypt.compare(req.body._userLoginPassword, user.Password);
 
         if (!pwd_match) {
-             res.json({ message: "Invalid email or password" });
+            res.json({ message: "Invalid email or password" });
         }
 
         res.json({status:true});
@@ -56,22 +56,22 @@ app.post("/register", async (req, res) => {
 
         const hash_password = await bcrypt.hash(req.body._password, 10);
 
-        const user = await User_model.findOne({ Email:req.body._email });
+        const user = await User_model.findOne({ Email: req.body._email });
 
         if (!user) {
-            const new_user ={
-                name:req.body._username,
+            const new_user = {
+                name: req.body._username,
                 Email: req.body._email,
                 Password: hash_password,
             };
 
             await User_model.create(new_user);
-            res.json({message:"user Added!!"});
+            res.json({});
         } else {
             res.status(500).json({ message: "User already exists..." });
         }
     } catch (error) {
-    console.log(error)
+        console.log(error)
     }
 });
 
@@ -81,7 +81,7 @@ app.post("/register", async (req, res) => {
 //     try{
 
 //     const data=await User_model.find({}) //get all records
-    
+
 //     res.status(200).send(data) //data sent as response to user
 //     }catch(err){
 //         res.status(401).send("Error "+err)

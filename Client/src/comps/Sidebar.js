@@ -5,6 +5,12 @@ import { useNavigate } from 'react-router-dom';
 export default function Sidebar({ isOpen, toggle }) {
     const navigate = useNavigate();
 
+     const handleClick=()=>{
+
+
+        
+     }
+
     return (
         <div
             className="bg-dark text-white"
