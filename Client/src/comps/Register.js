@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Form, FormGroup, Label, Input, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
+import { Button, Form, FormGroup, Label, Input } from "reactstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useDispatch } from "react-redux"
 import RegsterImage from "./images/purple.jpg"
@@ -21,17 +21,10 @@ export default function Register() {
   const [firstName, setFirstName] = useState();
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
-  const [modal, setModal] = useState(false);
 
   const navigate = useNavigate();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
-  const toggle = () => setModal(!modal);
-
-  const handleCloseModal = () => {
-    toggle();
-    navigate("/");
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -48,7 +41,8 @@ export default function Register() {
     try {
       const resultAction = await dispatch(RegisterDataThunk(newUserRegisterData));
       if (RegisterDataThunk.fulfilled.match(resultAction)) {
-        setModal(true);
+        alert("Registration Successful\nYou have successfully registered!");
+        navigate("/");
       } else {
         console.error("Registration failed:", resultAction.payload || resultAction.error);
       }
@@ -146,18 +140,7 @@ export default function Register() {
           </div>
         </div>
 
-        {/* Success Modal */}
-        <Modal isOpen={modal} toggle={toggle}>
-          <ModalHeader toggle={toggle}>Registration Successful</ModalHeader>
-          <ModalBody>
-            You have successfully registered!
-          </ModalBody>
-          <ModalFooter>
-            <Button color="primary" onClick={handleCloseModal}>
-              OK
-            </Button>
-          </ModalFooter>
-        </Modal>
+
 
       </div>
     </div>

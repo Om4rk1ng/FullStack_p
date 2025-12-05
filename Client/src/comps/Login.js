@@ -42,9 +42,7 @@ export default function Login() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
+  const handleLogin = async () => {
     // run validation before dispatch
     if (!validate()) {
       return;
@@ -57,10 +55,13 @@ export default function Login() {
     };
 
     console.log(messageSelector);
-    dispatch(LoginThunk(userLoginData));
-
-    if (messageSelector == "Login successful") {
-      navigate("/home");
+    try {
+      const resultAction = await dispatch(LoginThunk(userLoginData));
+      if (LoginThunk.fulfilled.match(resultAction)) {
+        navigate("/home");
+      }
+    } catch (error) {
+      console.error("Login failed", error);
     }
   };
 
@@ -81,7 +82,7 @@ export default function Login() {
         <div className="col-md-6 p-5 bg-white d-flex flex-column justify-content-center">
           <div className="form-wrapper">
             <h2 className="text-center mb-4">Login</h2>
-            <Form onSubmit={handleSubmit}>
+            <Form>
               <FormGroup>
                 <Label for="email">Email</Label>
                 <Input
@@ -114,7 +115,7 @@ export default function Login() {
                 )}
               </FormGroup>
 
-              <Button color="primary" block className="mb-3">
+              <Button color="primary" block className="mb-3" type="button" onClick={handleLogin}>
                 Login
               </Button>
 

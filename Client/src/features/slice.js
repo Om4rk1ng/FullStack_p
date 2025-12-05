@@ -54,7 +54,7 @@ const TaskTrackSlice = createSlice({
 
     builder.addCase(RegisterDataThunk.fulfilled, (state, action) => {
       state.loading = false;
-      state.msg = action.payload?.message || "User registered successfully";
+      state.msg = "";
     });
 
     builder.addCase(RegisterDataThunk.rejected, (state) => {
@@ -71,10 +71,10 @@ const TaskTrackSlice = createSlice({
     builder.addCase(LoginThunk.fulfilled, (state, action) => {
       state.loading = false;
       state.usersActive = action.payload.user;
-      state.msg =action.payload.message;
+      state.msg = action.payload.message;
     });
 
-    builder.addCase(LoginThunk.rejected, (state,action) => {
+    builder.addCase(LoginThunk.rejected, (state, action) => {
       state.loading = false;
       state.msg = action.payload.message
     });
