@@ -27,17 +27,22 @@ app.post('/login', async (req, res) => {
     try {
         const user = await User_model.findOne({ Email: req.body._userLoginEmail });
 
+
+        
         if (!user) {
-            res.json({ message: "User not found" });
+            res.json({ message: "User not found" }); //new login code updated
         }
 
-        const pwd_match = await bcrypt.compare(req.body._userLoginPassword, user.Password);
+        else{
+       const pwd_match = await bcrypt.compare(req.body._userLoginPassword, user.Password);
 
         if (!pwd_match) {
              res.json({ message: "Invalid email or password" });
         }
 
-        res.json({ message: "Login successful" });
+        res.json({status:true});
+        }
+ 
 
     } catch (error) {
         console.error(error);

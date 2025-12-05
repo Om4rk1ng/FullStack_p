@@ -14,7 +14,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   
 const messageSelector=useSelector((state)=>state.TaskStore.msg)
-
+const loginStatus=useSelector((state)=>state.TaskStore.usersActive)
   const navigate = useNavigate();
 
 
@@ -31,9 +31,19 @@ const messageSelector=useSelector((state)=>state.TaskStore.msg)
     }
     console.log(messageSelector)
     dispatch(LoginThunk(userLoginData))
-    if(messageSelector=="Login successful")
-    navigate("/home");
+
   };
+
+
+
+  useEffect(()=>{
+
+
+    if(loginStatus)
+    navigate("/home");
+
+  },[loginStatus])
+
 
   return (
     <div className="login-page d-flex align-items-center justify-content-center">
@@ -82,7 +92,7 @@ const messageSelector=useSelector((state)=>state.TaskStore.msg)
                 Login
               </Button>
 
-              <span>{messageSelector}</span>
+              <span style={{color:"red"}}>{messageSelector}</span>
 
               <div className="text-center">
                 <span>Don't have an account? </span>
