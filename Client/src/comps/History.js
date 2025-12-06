@@ -26,10 +26,12 @@ const History = () => {
     const filteredTasks = tasks.filter((task) => {
         const status = task.status || "pending"; // default pending
         const matchesTab = status === activeTab;
+
         const title = (task.tasktitle || "").toLowerCase();
         const desc = (task.description || "").toLowerCase();
         const q = searchQuery.toLowerCase();
         const matchesSearch = title.includes(q) || desc.includes(q);
+
         return matchesTab && matchesSearch;
     });
 
@@ -104,8 +106,30 @@ const History = () => {
                                                 <div className="task-details">
                                                     <h5 className="task-title">{task.tasktitle}</h5>
                                                     <p className="task-description">{task.description}</p>
+
+                                                    {/* 👇 NEW: Due date line (same data as Home.js) */}
+                                                    {task.duedate && (
+                                                        <p className="task-date">
+                                                            <strong>Due:</strong>{" "}
+                                                            {new Date(task.duedate).toLocaleDateString()}
+                                                        </p>
+                                                    )}
                                                 </div>
                                             </div>
+
+                                            {/* 👇 NEW: Map preview (same logic as Home.js), but kept below content to preserve layout */}
+                                            {task.lat && task.lon && (
+                                                <div style={{ marginTop: "10px" }}>
+                                                    <iframe
+                                                        title={`map-${task._id}`}
+                                                        width="100%"
+                                                        height="150"
+                                                        loading="lazy"
+                                                        style={{ borderRadius: "10px", border: 0 }}
+                                                        src={`https://www.google.com/maps?q=${task.lat},${task.lon}&z=14&output=embed`}
+                                                    ></iframe>
+                                                </div>
+                                            )}
                                         </CardBody>
                                     </Card>
                                 </Col>

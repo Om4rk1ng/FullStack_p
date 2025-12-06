@@ -25,7 +25,7 @@ function App() {
         <Route path='/history' element={<History />} />
         <Route path='/aboutus' element={<AboutUs />} />
         <Route path='/profile' element={<Profile />} />
-        <Route path="/forgotpass" element={<ForgotPass />} />
+        <Route path="/reset-password" element={<ForgotPass />} />
       </Routes>
     </BrowserRouter>
 

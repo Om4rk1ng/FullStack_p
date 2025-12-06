@@ -11,48 +11,48 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const dispatch = useDispatch();
+  const messageSelector = useSelector((state) => state.TaskStore.msg);
+  const loginStatus = useSelector((state) => state.TaskStore.usersActive);
+
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  // safe selector so it never crashes
-  const {
-    msg: messageSelector = "",
-    usersActive: loginStatus = false,
-    currentUser,
-  } = useSelector((state) => state.TaskStore || {});
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
+  // 🔥 SIMPLE VALIDATION RESTORED
+  if (!email || !password) {
+    alert("Please fill in both email and password.");
+    return;
+  }
 
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    // simple client-side validation
-    if (!email || !password) {
-      alert("Please enter email and password");
-      return;
-    }
-
-    const userLoginData = {
-      _userLoginEmail: email,
-      _userLoginPassword: password,
-    };
-
-    dispatch(LoginThunk(userLoginData));
+  const userLoginData = {
+    _userLoginEmail: email,
+    _userLoginPassword: password,
   };
 
-  useEffect(() => {
-  if (loginStatus && currentUser) {
-    if (currentUser.name) {
-      localStorage.setItem("name", currentUser.name);
+  const resultAction = await dispatch(LoginThunk(userLoginData));
+
+  if (LoginThunk.fulfilled.match(resultAction)) {
+    const data = resultAction.payload;
+
+    if (data?.status) {
+      localStorage.setItem("name", data.name || "");
+      localStorage.setItem("email", data.email || "");
+      localStorage.setItem("userId", data.userId || "");
+      localStorage.setItem("profileImage", data.profileImage || "");
+      localStorage.setItem("gender", data.gender || "");
+      localStorage.setItem("specialization", data.specialization || "");
     }
-    if (currentUser.profileImage) {
-      localStorage.setItem("profileImage", currentUser.profileImage);
-    }
-    navigate("/home");
   }
-}, [loginStatus, currentUser, navigate]);
+};
 
 
+  useEffect(() => {
+    if (loginStatus) {
+      navigate("/home");
+    }
+  }, [loginStatus, navigate]);
 
   return (
     <div className="login-page d-flex align-items-center justify-content-center">
@@ -96,31 +96,22 @@ export default function Login() {
                 />
               </FormGroup>
 
-              <div className="text-right mb-3">
-                <a
-                  href="/forgotpass"
-                  style={{
-                    fontSize: "0.9rem",
-                    color: "#667eea",
-                    textDecoration: "none",
-                    cursor: "pointer"
-                  }}
-                >
-                  Forgot Password?
-                </a>
-              </div>
-
               <Button color="primary" block className="mb-3">
                 Login
               </Button>
 
-              {/* Backend validation message */}
               <span style={{ color: "red" }}>{messageSelector}</span>
 
-              <div className="text-center">
+              <div className="text-center mt-2">
                 <span>Don't have an account? </span>
                 <a href="/register" className="signup-link">
                   Sign up
+                </a>
+              </div>
+
+              <div className="text-center mt-2">
+                <a href="/reset-password" className="signup-link">
+                  Forgot Password?
                 </a>
               </div>
             </Form>

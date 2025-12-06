@@ -11,7 +11,10 @@ export default function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [profileImage, setProfileImage] = useState(""); // 👈 NEW
+  const [profileImage, setProfileImage] = useState("");
+
+  const [gender, setGender] = useState("");              // 👈 NEW
+  const [specialization, setSpecialization] = useState(""); // 👈 NEW
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -24,21 +27,31 @@ export default function Register() {
       return;
     }
 
+    if (!gender) {
+      alert("Please select your gender");
+      return;
+    }
+
+    if (!specialization) {
+      alert("Please select your specialization");
+      return;
+    }
+
     const newUserRegisterData = {
       _username: name,
       _email: email,
       _password: password,
-      // backend will ignore _profileImage for now, but we store it locally
       _profileImage: profileImage,
+      _gender: gender,                     // 👈 NEW
+      _specialization: specialization,     // 👈 NEW
     };
 
     try {
       const resultAction = await dispatch(RegisterDataThunk(newUserRegisterData));
 
       if (RegisterDataThunk.fulfilled.match(resultAction)) {
-        // save profile image locally for now
         if (profileImage) {
-          localStorage.setItem("profileImage", profileImage); // 👈 NEW
+          localStorage.setItem("profileImage", profileImage);
         }
         alert("Registration Successful\nYou have successfully registered!");
         navigate("/");
@@ -71,6 +84,7 @@ export default function Register() {
             <h2 className="text-center mb-4">Registration</h2>
 
             <Form onSubmit={handleSubmit}>
+              {/* Name */}
               <FormGroup>
                 <Label htmlFor="name">Name</Label>
                 <Input
@@ -82,6 +96,7 @@ export default function Register() {
                 />
               </FormGroup>
 
+              {/* Email */}
               <FormGroup>
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -93,6 +108,7 @@ export default function Register() {
                 />
               </FormGroup>
 
+              {/* Password */}
               <FormGroup>
                 <Label htmlFor="password">Password</Label>
                 <Input
@@ -104,7 +120,7 @@ export default function Register() {
                 />
               </FormGroup>
 
-              {/* 👇 NEW: Profile Image URL field */}
+              {/* Profile Image URL */}
               <FormGroup>
                 <Label htmlFor="profileImage">Profile Image URL (optional)</Label>
                 <Input
@@ -116,7 +132,58 @@ export default function Register() {
                 />
               </FormGroup>
 
-              <Button type="submit" color="primary" block className="mb-3">
+              {/* Gender (Radio) */}
+              <FormGroup tag="fieldset" className="mt-3">
+                <Label>Gender</Label>
+                <div className="d-flex gap-3 mt-1">
+                  <FormGroup check>
+                    <Input
+                      type="radio"
+                      name="gender"
+                      id="genderMale"
+                      value="male"
+                      checked={gender === "male"}
+                      onChange={(e) => setGender(e.target.value)}
+                    />
+                    <Label check htmlFor="genderMale">
+                      Male
+                    </Label>
+                  </FormGroup>
+
+                  <FormGroup check>
+                    <Input
+                      type="radio"
+                      name="gender"
+                      id="genderFemale"
+                      value="female"
+                      checked={gender === "female"}
+                      onChange={(e) => setGender(e.target.value)}
+                    />
+                    <Label check htmlFor="genderFemale">
+                      Female
+                    </Label>
+                  </FormGroup>
+                </div>
+              </FormGroup>
+
+              {/* Specialization (Dropdown) */}
+              <FormGroup className="mt-3">
+                <Label htmlFor="specialization">Specialization</Label>
+                <Input
+                  type="select"
+                  id="specialization"
+                  value={specialization}
+                  onChange={(e) => setSpecialization(e.target.value)}
+                >
+                  <option value="">Select specialization</option>
+                  <option value="Software Engineering">Software Engineering</option>
+                  <option value="Cyber Security">Cyber Security</option>
+                  <option value="Networking">Networking</option>
+                  <option value="Data Science and AI">Data Science and AI</option>
+                </Input>
+              </FormGroup>
+
+              <Button type="submit" color="primary" block className="mb-3 mt-3">
                 Register
               </Button>
 

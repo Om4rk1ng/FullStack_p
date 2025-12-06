@@ -5,12 +5,14 @@ import { useNavigate } from 'react-router-dom';
 export default function Sidebar({ isOpen, toggle }) {
     const navigate = useNavigate();
 
-     const handleClick=()=>{
+const handleLogout = () => {
+    localStorage.removeItem("name");
+    localStorage.removeItem("email");
+    localStorage.removeItem("profileImage");
+    localStorage.removeItem("userId");
 
-
-        
-     }
-
+    navigate("/"); // back to login page
+};
     return (
         <div
             className="bg-dark text-white"
@@ -103,7 +105,7 @@ export default function Sidebar({ isOpen, toggle }) {
                 <ListGroupItem
                     action
                     tag="button"
-                    onClick={() => navigate('/')}
+                    onClick={handleLogout} // 👈 USE logout function instead of navigate
                     className="bg-dark text-white border-secondary d-flex align-items-center"
                     style={{
                         transition: 'all 0.3s ease',
@@ -120,6 +122,7 @@ export default function Sidebar({ isOpen, toggle }) {
                         Logout
                     </span>
                 </ListGroupItem>
+
             </ListGroup>
         </div>
     );

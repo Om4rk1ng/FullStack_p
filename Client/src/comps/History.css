@@ -145,8 +145,15 @@
   margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.task-date {
+  font-size: 0.875rem;
+  color: #6c757d;
+  margin: 0;
 }
 
 .no-results {

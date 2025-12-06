@@ -45,8 +45,11 @@ app.post('/login', async (req, res) => {
       name: user.name,
       email: user.Email,
       userId: user._id,
-      profileImage: user.profileImage || ""   // 👈 NEW
+      profileImage: user.profileImage || "",
+      gender: user.gender || "",                     // 👈 NEW
+      specialization: user.specialization || ""      // 👈 NEW
     });
+
   } catch (error) {
     console.error(error);
     return res.status(500).json({ status: false, message: "Server error" });
@@ -54,11 +57,16 @@ app.post('/login', async (req, res) => {
 });
 
 
-
-
 app.post("/register", async (req, res) => {
   try {
-    const { _username, _email, _password, _profileImage } = req.body;
+    const { 
+      _username, 
+      _email, 
+      _password, 
+      _profileImage,
+      _gender,            // 👈 NEW
+      _specialization     // 👈 NEW
+    } = req.body;
 
     const existingUser = await User_model.findOne({ Email: _email });
 
@@ -75,7 +83,9 @@ app.post("/register", async (req, res) => {
       name: _username,
       Email: _email,
       Password: hash_password,
-      profileImage: _profileImage || ""   // 👈 save profile image URL
+      profileImage: _profileImage || "",
+      gender: _gender || "",                 // 👈 NEW
+      specialization: _specialization || ""  // 👈 NEW
     });
 
     return res.json({
@@ -88,6 +98,7 @@ app.post("/register", async (req, res) => {
     return res.json({ status: false, message: "Server error" });
   }
 });
+
 
 app.post("/reset-password", async (req, res) => {
   const { email, newPassword } = req.body;
@@ -105,6 +116,44 @@ app.post("/reset-password", async (req, res) => {
 
     res.json({ status: true, message: "Password updated successfully" });
 
+  } catch (err) {
+    console.log(err);
+    res.json({ status: false, message: "Server error" });
+  }
+});
+
+// Update profile
+app.put("/update-profile", async (req, res) => {
+  const { userId, name, profileImage } = req.body;
+
+  try {
+    const updated = await User_model.findByIdAndUpdate(
+      userId,
+      { name, profileImage },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.json({ status: false, message: "User not found" });
+    }
+
+    res.json({ status: true, message: "Profile updated successfully" });
+  } catch (err) {
+    console.log(err);
+    res.json({ status: false, message: "Server error" });
+  }
+});
+
+// Delete account
+app.delete("/delete-account/:id", async (req, res) => {
+  try {
+    const deleted = await User_model.findByIdAndDelete(req.params.id);
+
+    if (!deleted) {
+      return res.json({ status: false, message: "User not found" });
+    }
+
+    res.json({ status: true, message: "Account deleted successfully" });
   } catch (err) {
     console.log(err);
     res.json({ status: false, message: "Server error" });

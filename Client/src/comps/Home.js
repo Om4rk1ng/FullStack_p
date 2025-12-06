@@ -25,7 +25,11 @@ export default function Home() {
     const [taskDescription, setTaskDescription] = useState('');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
-    const [location, setLocation] = useState('');   // 👈 NEW
+    const [lon, setLon] = useState('');              // still used internally
+    const [lat, setLat] = useState('');              // still used internally
+    const [locationUrl, setLocationUrl] = useState(''); // 👈 NEW (what user types)
+
+
 
 
     useEffect(() => {
@@ -50,11 +54,14 @@ export default function Home() {
             setTaskDescription('');
             setStartDate('');
             setEndDate('');
-            setLocation('');          // 👈 NEW
+            setLon('');
+            setLat('');
+            setLocationUrl('');   // 👈 NEW
             setIsEditMode(false);
             setCurrentTaskId(null);
         }
     };
+
 
     const handlePublish = () => {
         if (!taskTitle || !taskDescription || !startDate || !endDate) {
@@ -62,26 +69,45 @@ export default function Home() {
             return;
         }
 
+        let finalLat = lat;
+        let finalLon = lon;
+
+        // If user entered a location URL, try to extract lat/lon from it
+        if (locationUrl) {
+            const match = locationUrl.match(/@?(-?\d+(\.\d+)?),\s*(-?\d+(\.\d+)?)/);
+            if (match) {
+                finalLat = match[1]; // first number
+                finalLon = match[3]; // second number
+            } else {
+                alert(
+                    "Could not detect coordinates from the link. Please paste a Google Maps link that contains coordinates like '23.5880,58.3829'."
+                );
+                return;
+            }
+        }
+
         const taskData = {
             tasktitle: taskTitle,
             description: taskDescription,
             duedate: endDate, // using endDate as due date
-            lon: location,    // 👈 store user-entered location here
-            lat: ""           // still unused
+            lon: finalLon || "",
+            lat: finalLat || ""
         };
 
-
         if (isEditMode) {
-            dispatch(updateTask({
-                id: currentTaskId,
-                data: taskData
-            }));
+            dispatch(
+                updateTask({
+                    id: currentTaskId,
+                    data: taskData
+                })
+            );
         } else {
             dispatch(addTask(taskData));
         }
 
         toggleModal();
     };
+
 
     const handleEdit = (task) => {
         setIsEditMode(true);
@@ -90,9 +116,14 @@ export default function Home() {
         setTaskDescription(task.description);
         setStartDate(task.duedate);
         setEndDate(task.duedate);
-        setLocation(task.lon || "");     // 👈 NEW
+        setLon(task.lon || "");
+        setLat(task.lat || "");
+        setLocationUrl(
+            task.lat && task.lon ? `https://www.google.com/maps?q=${task.lat},${task.lon}` : ""
+        ); // 👈 NEW
         toggleModal();
     };
+
 
 
     const handleDelete = (id) => {
@@ -118,6 +149,8 @@ export default function Home() {
 };
 
 
+
+
     // Filter tasks based on search query
     const filteredTasks = (tasks || []).filter(task =>
         (task.tasktitle || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -126,7 +159,8 @@ export default function Home() {
 
     return (
         <div className="d-flex" id="wrapper" style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #ffffffff 0%, #fafafaff 100%)' }}>
-            <Sidebar isOpen={sidebarOpen} toggle={toggleSidebar} />
+            <Sidebar isOpen={sidebarOpen} toggle={toggleSidebar}/>
+
             <Container fluid className="p-5" style={{
                 transition: 'margin-left 0.3s ease',
                 overflowY: 'auto'
@@ -329,12 +363,20 @@ export default function Home() {
                                                     {task.duedate ? new Date(task.duedate).toLocaleDateString() : "—"}
                                                 </div>
 
-                                                {task.lon && (
-                                                    <div className="mb-1">
-                                                        <strong>Location:</strong> {task.lon}
+                                                {task.lat && task.lon && (
+                                                    <div style={{ marginTop: "10px" }}>
+                                                        <iframe
+                                                            title={`map-${task._id}`}
+                                                            width="100%"
+                                                            height="150"
+                                                            loading="lazy"
+                                                            style={{ borderRadius: "10px", border: 0 }}
+                                                            src={`https://www.google.com/maps?q=${task.lat},${task.lon}&z=14&output=embed`}
+                                                        ></iframe>
                                                     </div>
                                                 )}
                                             </div>
+
 
                                             <div style={{
                                                 marginTop: '15px',
@@ -441,15 +483,20 @@ export default function Home() {
                                 />
                             </FormGroup>
                             <FormGroup>
-                                <Label for="taskLocation">Location</Label>
+                                <Label for="locationUrl">Location Link (optional)</Label>
                                 <Input
                                     type="text"
-                                    id="taskLocation"
-                                    placeholder="Enter task location"
-                                    value={location}
-                                    onChange={(e) => setLocation(e.target.value)}
+                                    id="locationUrl"
+                                    placeholder="Paste Google Maps link here"
+                                    value={locationUrl}
+                                    onChange={(e) => setLocationUrl(e.target.value)}
                                 />
+                                <small style={{ color: "#6c757d" }}>
+                                    Example: https://www.google.com/maps?q=23.5880,58.3829
+                                </small>
                             </FormGroup>
+
+
 
                             <Row>
                                 <Col md={6}>
