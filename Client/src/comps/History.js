@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Input, Nav, NavItem, NavLink, Card, CardBody, Row, Col } from 'reactstrap';
+import { useDispatch, useSelector } from "react-redux";
+import { fetchTasks } from "../features/taskSlice";
 import Sidebar from './Sidebar';
 import './History.css';
 
@@ -8,40 +10,26 @@ const History = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [sidebarOpen, setSidebarOpen] = useState(true);
 
+    const dispatch = useDispatch();
+    const tasks = useSelector((state) => state.tasks.items || []);
+
     const toggleSidebar = () => {
         setSidebarOpen(!sidebarOpen);
     };
 
-    // Sample data - replace with actual data from your backend/state
-    const tasks = [
-        {
-            id: 1,
-            title: 'Assignment FullStack',
-            description: 'A full-stack web application that integrates a responsive front-end with a secure back-end and database. It allows users to register, log in, and manage data through a smooth and interactive interface using modern web technologies.',
-            status: 'pending',
-            image: '/api/placeholder/100/100'
-        },
-        {
-            id: 2,
-            title: 'Homework',
-            description: 'A full-stack web application that integrates a responsive front-end with a secure back-end and database. It allows users to register, log in, and manage data through a smooth and interactive interface using modern web technologies.',
-            status: 'pending',
-            image: '/api/placeholder/100/100'
-        },
-        {
-            id: 3,
-            title: 'Assignment FullStack',
-            description: 'A full-stack web application that integrates a responsive front-end with a secure back-end and database. It allows users to register, log in, and manage data through a smooth and interactive interface using modern web technologies.',
-            status: 'completed',
-            image: '/api/placeholder/100/100'
-        }
-    ];
+    // Load tasks (in case user opens History directly)
+    useEffect(() => {
+        dispatch(fetchTasks());
+    }, [dispatch]);
 
     // Filter tasks based on active tab and search query
-    const filteredTasks = tasks.filter(task => {
-        const matchesTab = task.status === activeTab;
-        const matchesSearch = task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            task.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const filteredTasks = tasks.filter((task) => {
+        const status = task.status || "pending"; // default pending
+        const matchesTab = status === activeTab;
+        const title = (task.tasktitle || "").toLowerCase();
+        const desc = (task.description || "").toLowerCase();
+        const q = searchQuery.toLowerCase();
+        const matchesSearch = title.includes(q) || desc.includes(q);
         return matchesTab && matchesSearch;
     });
 
@@ -103,13 +91,18 @@ const History = () => {
                     <Row>
                         {filteredTasks.length > 0 ? (
                             filteredTasks.map(task => (
-                                <Col md={6} lg={4} key={task.id} className="mb-4">
-                                    <Card className={`task-card ${task.status}`}>
+                                <Col md={6} lg={4} key={task._id} className="mb-4">
+                                    <Card className={`task-card ${task.status || 'pending'}`}>
                                         <CardBody>
                                             <div className="task-card-content">
-                                                <img src={task.image} alt={task.title} className="task-image" />
+                                                {/* Placeholder image since tasks don't have image field */}
+                                                <img
+                                                    src="/api/placeholder/100/100"
+                                                    alt={task.tasktitle}
+                                                    className="task-image"
+                                                />
                                                 <div className="task-details">
-                                                    <h5 className="task-title">{task.title}</h5>
+                                                    <h5 className="task-title">{task.tasktitle}</h5>
                                                     <p className="task-description">{task.description}</p>
                                                 </div>
                                             </div>

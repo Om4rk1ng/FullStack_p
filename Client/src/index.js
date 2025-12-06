@@ -8,12 +8,11 @@ import TaskTrackStore from "./features/store.js"
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
+  
     <Provider store={TaskTrackStore}>
-    <App />
+  <App />
+</Provider>
 
-    </Provider>
-  </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function

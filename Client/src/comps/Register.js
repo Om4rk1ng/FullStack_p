@@ -1,76 +1,60 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Form, FormGroup, Label, Input } from "reactstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useDispatch } from "react-redux"
-import RegsterImage from "./images/purple.jpg"
-import { yupResolver } from "@hookform/resolvers/yup"
-import { register, useForm } from "react-hook-form"
-import { RegisterDataThunk } from "../features/slice.js"
-import regValidation from "../Validation/validation.js";
+import { useDispatch } from "react-redux";
+import RegsterImage from "./images/purple.jpg";
+import { RegisterDataThunk } from "../features/slice.js";
 import "./Login.css";
 
 export default function Register() {
-
-
-  //UPDATED
-
-
-
-
-  const [firstName, setFirstName] = useState();
-  const [email, setEmail] = useState();
-  const [password, setPassword] = useState();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [profileImage, setProfileImage] = useState(""); // 👈 NEW
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!name || !email || !password) {
+      alert("Please fill in all required fields");
+      return;
+    }
 
     const newUserRegisterData = {
-
-      _username: firstName,
+      _username: name,
       _email: email,
-      _password: password
-
-    }
+      _password: password,
+      // backend will ignore _profileImage for now, but we store it locally
+      _profileImage: profileImage,
+    };
 
     try {
       const resultAction = await dispatch(RegisterDataThunk(newUserRegisterData));
+
       if (RegisterDataThunk.fulfilled.match(resultAction)) {
+        // save profile image locally for now
+        if (profileImage) {
+          localStorage.setItem("profileImage", profileImage); // 👈 NEW
+        }
         alert("Registration Successful\nYou have successfully registered!");
         navigate("/");
       } else {
         console.error("Registration failed:", resultAction.payload || resultAction.error);
+        alert("Registration failed. Please try again.");
       }
     } catch (err) {
       console.error("Unexpected error during registration:", err);
+      alert("Unexpected error. Please try again.");
     }
-
-    // Save to localStorage
-    //navigate to inspect>Application>LocalStorage>Click the dropdown List
-
-
-
-    // Navigate to home
-    // navigate("/"); // Moved to handleCloseModal
   };
-
-
-
-  //   const { register, handleSubmit: handleRegister, formState: { errors } } = useForm(
-  //     {
-  //         resolver: yupResolver(regValidation)
-  //     }
-  // )
 
   return (
     <div className="login-page d-flex align-items-center justify-content-center">
       <div className="login-card shadow-lg rounded overflow-hidden row">
-
         {/* Left Image */}
         <div className="col-md-6 d-none d-md-block p-0">
           <img
@@ -87,43 +71,50 @@ export default function Register() {
             <h2 className="text-center mb-4">Registration</h2>
 
             <Form onSubmit={handleSubmit}>
-
               <FormGroup>
-                <Label for="firstName">First Name</Label>
+                <Label htmlFor="name">Name</Label>
                 <Input
                   type="text"
+                  id="name"
                   placeholder=""
-                  onChange={(e) => setFirstName(e.target.value)} />
-
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
               </FormGroup>
 
-
-
-
-
               <FormGroup>
-                <Label for="email">Email</Label>
+                <Label htmlFor="email">Email</Label>
                 <Input
                   type="email"
                   id="email"
                   placeholder=""
+                  value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
-
               </FormGroup>
 
               <FormGroup>
-                <Label for="password">Password</Label>
+                <Label htmlFor="password">Password</Label>
                 <Input
                   type="password"
                   id="password"
                   placeholder=""
+                  value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
-
               </FormGroup>
 
-
+              {/* 👇 NEW: Profile Image URL field */}
+              <FormGroup>
+                <Label htmlFor="profileImage">Profile Image URL (optional)</Label>
+                <Input
+                  type="text"
+                  id="profileImage"
+                  placeholder="https://example.com/my-photo.jpg"
+                  value={profileImage}
+                  onChange={(e) => setProfileImage(e.target.value)}
+                />
+              </FormGroup>
 
               <Button type="submit" color="primary" block className="mb-3">
                 Register
@@ -136,12 +127,8 @@ export default function Register() {
                 </a>
               </div>
             </Form>
-
           </div>
         </div>
-
-
-
       </div>
     </div>
   );

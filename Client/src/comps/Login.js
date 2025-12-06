@@ -3,52 +3,60 @@ import { useNavigate } from "react-router-dom";
 import { Button, Form, FormGroup, Label, Input } from "reactstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import LoginImage from "./images/Cover.png";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { LoginThunk } from "../features/slice";
-import { useDispatch } from "react-redux";
-
-import "./Login.css"; // We'll add some custom CSS here
+import "./Login.css";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  
-const messageSelector=useSelector((state)=>state.TaskStore.msg)
-const loginStatus=useSelector((state)=>state.TaskStore.usersActive)
+
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  // safe selector so it never crashes
+  const {
+    msg: messageSelector = "",
+    usersActive: loginStatus = false,
+    currentUser,
+  } = useSelector((state) => state.TaskStore || {});
 
 
-  const dispatch=useDispatch()
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Add login logic here
-    const userLoginData={
-      _userLoginEmail:email,
-      _userLoginPassword:password
+    // simple client-side validation
+    if (!email || !password) {
+      alert("Please enter email and password");
+      return;
     }
-    console.log(messageSelector)
-    dispatch(LoginThunk(userLoginData))
 
+    const userLoginData = {
+      _userLoginEmail: email,
+      _userLoginPassword: password,
+    };
+
+    dispatch(LoginThunk(userLoginData));
   };
 
-
-
-  useEffect(()=>{
-
-//useEffect part
-    if(loginStatus)
+  useEffect(() => {
+  if (loginStatus && currentUser) {
+    if (currentUser.name) {
+      localStorage.setItem("name", currentUser.name);
+    }
+    if (currentUser.profileImage) {
+      localStorage.setItem("profileImage", currentUser.profileImage);
+    }
     navigate("/home");
+  }
+}, [loginStatus, currentUser, navigate]);
 
-  },[loginStatus])
 
 
   return (
     <div className="login-page d-flex align-items-center justify-content-center">
       <div className="login-card shadow-lg rounded overflow-hidden row">
-
         {/* Left Image */}
         <div className="col-md-6 d-none d-md-block p-0">
           <img
@@ -88,11 +96,26 @@ const loginStatus=useSelector((state)=>state.TaskStore.usersActive)
                 />
               </FormGroup>
 
+              <div className="text-right mb-3">
+                <a
+                  href="/forgotpass"
+                  style={{
+                    fontSize: "0.9rem",
+                    color: "#667eea",
+                    textDecoration: "none",
+                    cursor: "pointer"
+                  }}
+                >
+                  Forgot Password?
+                </a>
+              </div>
+
               <Button color="primary" block className="mb-3">
                 Login
               </Button>
 
-              <span style={{color:"red"}}>{messageSelector}</span>
+              {/* Backend validation message */}
+              <span style={{ color: "red" }}>{messageSelector}</span>
 
               <div className="text-center">
                 <span>Don't have an account? </span>

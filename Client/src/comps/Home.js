@@ -1,36 +1,43 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Input, Button, InputGroup, Card, CardBody, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label } from 'reactstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { useDispatch, useSelector } from "react-redux";
+import { fetchTasks, addTask, deleteTask, updateTask } from "../features/taskSlice";
 import Sidebar from './Sidebar';
-
+import { useNavigate } from "react-router-dom";
 export default function Home() {
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
     const [sidebarOpen, setSidebarOpen] = useState(true);
-    const [tasks, setTasks] = useState([]);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const tasks = useSelector((state) => state.tasks.items);
+
     const [modalOpen, setModalOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [isEditMode, setIsEditMode] = useState(false);
     const [currentTaskId, setCurrentTaskId] = useState(null);
+
+    // Logged-in user name (stored in localStorage by your auth flow)
+    const [name, setName] = useState(localStorage.getItem("name") || "");
+    const [profileImage, setProfileImage] = useState(localStorage.getItem("profileImage") || ""); // 👈 NEW
 
     // Form state
     const [taskTitle, setTaskTitle] = useState('');
     const [taskDescription, setTaskDescription] = useState('');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
+    const [location, setLocation] = useState('');   // 👈 NEW
+
 
     useEffect(() => {
-        const storedFirstName = localStorage.getItem('firstName');
-        const storedLastName = localStorage.getItem('lastName');
-        if (storedFirstName) setFirstName(storedFirstName);
-        if (storedLastName) setLastName(storedLastName);
+        const storedName = localStorage.getItem("name");
+        if (storedName) setName(storedName);
 
-        // Load tasks from localStorage
-        const storedTasks = localStorage.getItem('tasks');
-        if (storedTasks) {
-            setTasks(JSON.parse(storedTasks));
-        }
-    }, []);
+        const storedProfileImage = localStorage.getItem("profileImage"); // 👈 NEW
+        if (storedProfileImage) setProfileImage(storedProfileImage);
+
+        dispatch(fetchTasks());
+    }, [dispatch]);
+
 
     const toggleSidebar = () => {
         setSidebarOpen(!sidebarOpen);
@@ -38,12 +45,12 @@ export default function Home() {
 
     const toggleModal = () => {
         setModalOpen(!modalOpen);
-        // Reset form when closing
         if (modalOpen) {
             setTaskTitle('');
             setTaskDescription('');
             setStartDate('');
             setEndDate('');
+            setLocation('');          // 👈 NEW
             setIsEditMode(false);
             setCurrentTaskId(null);
         }
@@ -51,62 +58,70 @@ export default function Home() {
 
     const handlePublish = () => {
         if (!taskTitle || !taskDescription || !startDate || !endDate) {
-            alert('Please fill in all fields');
+            alert("Please fill all fields");
             return;
         }
 
-        if (isEditMode) {
-            // Update existing task
-            const updatedTasks = tasks.map(task =>
-                task.id === currentTaskId
-                    ? { ...task, title: taskTitle, description: taskDescription, startDate, endDate }
-                    : task
-            );
-            setTasks(updatedTasks);
-            localStorage.setItem('tasks', JSON.stringify(updatedTasks));
-        } else {
-            // Create new task
-            const newTask = {
-                id: Date.now(),
-                title: taskTitle,
-                description: taskDescription,
-                startDate: startDate,
-                endDate: endDate,
-                status: 'pending',
-                createdAt: new Date().toISOString()
-            };
+        const taskData = {
+            tasktitle: taskTitle,
+            description: taskDescription,
+            duedate: endDate, // using endDate as due date
+            lon: location,    // 👈 store user-entered location here
+            lat: ""           // still unused
+        };
 
-            const updatedTasks = [...tasks, newTask];
-            setTasks(updatedTasks);
-            localStorage.setItem('tasks', JSON.stringify(updatedTasks));
+
+        if (isEditMode) {
+            dispatch(updateTask({
+                id: currentTaskId,
+                data: taskData
+            }));
+        } else {
+            dispatch(addTask(taskData));
         }
 
-        // Close modal and reset form
         toggleModal();
     };
 
     const handleEdit = (task) => {
         setIsEditMode(true);
-        setCurrentTaskId(task.id);
-        setTaskTitle(task.title);
+        setCurrentTaskId(task._id);
+        setTaskTitle(task.tasktitle);
         setTaskDescription(task.description);
-        setStartDate(task.startDate);
-        setEndDate(task.endDate);
-        setModalOpen(true);
+        setStartDate(task.duedate);
+        setEndDate(task.duedate);
+        setLocation(task.lon || "");     // 👈 NEW
+        toggleModal();
     };
 
-    const handleDelete = (taskId) => {
-        if (window.confirm('Are you sure you want to delete this task?')) {
-            const updatedTasks = tasks.filter(task => task.id !== taskId);
-            setTasks(updatedTasks);
-            localStorage.setItem('tasks', JSON.stringify(updatedTasks));
+
+    const handleDelete = (id) => {
+        if (window.confirm("Are you sure you want to delete this task?")) {
+            dispatch(deleteTask(id));
         }
     };
 
+    const handleComplete = (task) => {
+    const updatedData = {
+        tasktitle: task.tasktitle,
+        description: task.description,
+        duedate: task.duedate,
+        lon: task.lon,
+        lat: task.lat,
+        status: "completed"
+    };
+
+    dispatch(updateTask({
+        id: task._id,
+        data: updatedData
+    }));
+};
+
+
     // Filter tasks based on search query
-    const filteredTasks = tasks.filter(task =>
-        task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        task.description.toLowerCase().includes(searchQuery.toLowerCase())
+    const filteredTasks = (tasks || []).filter(task =>
+        (task.tasktitle || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (task.description || "").toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     return (
@@ -119,22 +134,54 @@ export default function Home() {
                 {/* Header Section */}
                 <Row className="align-items-start mb-4">
                     <Col md={6}>
-                        <h2 style={{
-                            margin: 0,
-                            marginBottom: '20px',
-                            fontWeight: 'bold',
-                            color: '#000'
-                        }}>
-                            Welcome {firstName} {lastName}
-                        </h2>
-                        <h4 style={{
-                            margin: 0,
-                            fontWeight: '600',
-                            color: '#000'
-                        }}>
-                            My Tasks
-                        </h4>
+                        <div
+                            style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "15px",
+                                marginBottom: "10px",
+                            }}
+                        >
+                            {profileImage && (
+                                <img
+                                    src={profileImage}
+                                    alt={name || "Profile"}
+                                    onClick={() => navigate("/profile")}  // 👈 navigate to Profile
+                                    style={{
+                                        width: "50px",
+                                        height: "50px",
+                                        borderRadius: "50%",
+                                        objectFit: "cover",
+                                        border: "2px solid #667eea",
+                                        cursor: "pointer",                 // 👈 so user knows it's clickable
+                                    }}
+                                />
+                            )}
+                            <div>
+                                <h2
+                                    style={{
+                                        margin: 0,
+                                        marginBottom: "5px",
+                                        fontWeight: "bold",
+                                        color: "#000",
+                                    }}
+                                >
+                                    Welcome {name}
+                                </h2>
+                                <h4
+                                    style={{
+                                        margin: 0,
+                                        fontWeight: "600",
+                                        color: "#000",
+                                    }}
+                                >
+                                    My Tasks
+                                </h4>
+                            </div>
+                        </div>
                     </Col>
+
+
                     <Col md={6} className="d-flex justify-content-end">
                         <div style={{
                             background: '#fff',
@@ -143,7 +190,7 @@ export default function Home() {
                             boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
                             width: '300px'
                         }}>
- <InputGroup style={{ border: 'none' }}>
+                            <InputGroup style={{ border: 'none' }}>
                                 <Input
                                     placeholder="Search..."
                                     value={searchQuery}
@@ -166,7 +213,7 @@ export default function Home() {
                                     🔍
                                 </Button>
                             </InputGroup>
-                           
+
                         </div>
                     </Col>
                 </Row>
@@ -247,7 +294,7 @@ export default function Home() {
                         {/* Tasks Grid */}
                         <Row>
                             {filteredTasks.map(task => (
-                                <Col md={6} lg={4} key={task.id} className="mb-4">
+                                <Col md={6} lg={4} key={task._id} className="mb-4">
                                     <Card style={{
                                         borderRadius: '15px',
                                         border: 'none',
@@ -266,30 +313,40 @@ export default function Home() {
                                     >
                                         <CardBody>
                                             <h5 style={{ fontWeight: 'bold', color: '#333', marginBottom: '10px' }}>
-                                                {task.title}
+                                                {task.tasktitle}
                                             </h5>
                                             <p style={{ color: '#6c757d', fontSize: '0.9rem', marginBottom: '15px' }}>
                                                 {task.description}
                                             </p>
                                             <div style={{ fontSize: '0.85rem', color: '#999' }}>
                                                 <div className="mb-1">
-                                                    <strong>Start:</strong> {new Date(task.startDate).toLocaleDateString()}
+                                                    <strong>Start:</strong>{" "}
+                                                    {task.duedate ? new Date(task.duedate).toLocaleDateString() : "—"}
                                                 </div>
-                                                <div>
-                                                    <strong>End:</strong> {new Date(task.endDate).toLocaleDateString()}
+
+                                                <div className="mb-1">
+                                                    <strong>End:</strong>{" "}
+                                                    {task.duedate ? new Date(task.duedate).toLocaleDateString() : "—"}
                                                 </div>
+
+                                                {task.lon && (
+                                                    <div className="mb-1">
+                                                        <strong>Location:</strong> {task.lon}
+                                                    </div>
+                                                )}
                                             </div>
+
                                             <div style={{
                                                 marginTop: '15px',
                                                 padding: '5px 15px',
-                                                background: task.status === 'pending' ? '#fff3cd' : '#d4edda',
-                                                color: task.status === 'pending' ? '#856404' : '#155724',
+                                                background: (task.status || 'pending') === 'pending' ? '#fff3cd' : '#d4edda',
+                                                color: (task.status || 'pending') === 'pending' ? '#856404' : '#155724',
                                                 borderRadius: '20px',
                                                 display: 'inline-block',
                                                 fontSize: '0.8rem',
                                                 fontWeight: 'bold'
                                             }}>
-                                                {task.status.toUpperCase()}
+                                                {(task.status || 'pending').toUpperCase()}
                                             </div>
 
                                             {/* Action Buttons */}
@@ -317,7 +374,7 @@ export default function Home() {
                                                 </Button>
                                                 <Button
                                                     size="sm"
-                                                    onClick={() => handleDelete(task.id)}
+                                                    onClick={() => handleDelete(task._id)}
                                                     style={{
                                                         background: '#dc3545',
                                                         border: 'none',
@@ -329,6 +386,22 @@ export default function Home() {
                                                     }}
                                                 >
                                                     🗑️ Remove
+                                                </Button>
+                                                <Button
+                                                    size="sm"
+                                                    onClick={() => handleComplete(task)}
+                                                    style={{
+                                                        background: '#28a745',
+                                                        border: 'none',
+                                                        borderRadius: '8px',
+                                                        padding: '6px 15px',
+                                                        fontSize: '0.85rem',
+                                                        fontWeight: '600',
+                                                        flex: 1
+                                                    }}
+                                                    disabled={task.status === "completed"}
+                                                >
+                                                    ✔️ Complete
                                                 </Button>
                                             </div>
                                         </CardBody>
@@ -367,6 +440,17 @@ export default function Home() {
                                     onChange={(e) => setTaskDescription(e.target.value)}
                                 />
                             </FormGroup>
+                            <FormGroup>
+                                <Label for="taskLocation">Location</Label>
+                                <Input
+                                    type="text"
+                                    id="taskLocation"
+                                    placeholder="Enter task location"
+                                    value={location}
+                                    onChange={(e) => setLocation(e.target.value)}
+                                />
+                            </FormGroup>
+
                             <Row>
                                 <Col md={6}>
                                     <FormGroup>

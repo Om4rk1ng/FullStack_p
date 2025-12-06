@@ -23,56 +23,92 @@ catch (error) {
 }
 
 app.post('/login', async (req, res) => {
+  try {
+    const { _userLoginEmail, _userLoginPassword } = req.body;
 
-    try {
-        const user = await User_model.findOne({ Email: req.body._userLoginEmail });
+    const user = await User_model.findOne({ Email: _userLoginEmail });
 
-
-        
-        if (!user) {
-            res.json({ message: "User not found" }); //new login code updated
-        }
-
-        else{
-       const pwd_match = await bcrypt.compare(req.body._userLoginPassword, user.Password);
-
-        if (!pwd_match) {
-            res.json({ message: "Invalid email or password" });
-        }
-
-        res.json({status:true});
-        }
- 
-
-    } catch (error) {
-        console.error(error);
-        res.json({ message: "Server error" });
+    if (!user) {
+      return res.json({ status: false, message: "User not found" });
     }
+
+    const pwd_match = await bcrypt.compare(_userLoginPassword, user.Password);
+
+    if (!pwd_match) {
+      return res.json({ status: false, message: "Invalid email or password" });
+    }
+
+    // success
+    return res.json({
+      status: true,
+      message: "Login successful",
+      name: user.name,
+      email: user.Email,
+      userId: user._id,
+      profileImage: user.profileImage || ""   // 👈 NEW
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ status: false, message: "Server error" });
+  }
 });
 
 
+
+
 app.post("/register", async (req, res) => {
-    try {
+  try {
+    const { _username, _email, _password, _profileImage } = req.body;
 
-        const hash_password = await bcrypt.hash(req.body._password, 10);
+    const existingUser = await User_model.findOne({ Email: _email });
 
-        const user = await User_model.findOne({ Email: req.body._email });
-
-        if (!user) {
-            const new_user = {
-                name: req.body._username,
-                Email: req.body._email,
-                Password: hash_password,
-            };
-
-            await User_model.create(new_user);
-            res.json({});
-        } else {
-            res.status(500).json({ message: "User already exists..." });
-        }
-    } catch (error) {
-        console.log(error)
+    if (existingUser) {
+      return res.json({
+        status: false,
+        message: "User already exists"
+      });
     }
+
+    const hash_password = await bcrypt.hash(_password, 10);
+
+    await User_model.create({
+      name: _username,
+      Email: _email,
+      Password: hash_password,
+      profileImage: _profileImage || ""   // 👈 save profile image URL
+    });
+
+    return res.json({
+      status: true,
+      message: "Registration successful"
+    });
+
+  } catch (error) {
+    console.log(error);
+    return res.json({ status: false, message: "Server error" });
+  }
+});
+
+app.post("/reset-password", async (req, res) => {
+  const { email, newPassword } = req.body;
+
+  try {
+    const user = await User_model.findOne({ Email: email });
+
+    if (!user) {
+      return res.json({ status: false, message: "User not found" });
+    }
+
+    const hashed = await bcrypt.hash(newPassword, 10);
+
+    await User_model.updateOne({ Email: email }, { Password: hashed });
+
+    res.json({ status: true, message: "Password updated successfully" });
+
+  } catch (err) {
+    console.log(err);
+    res.json({ status: false, message: "Server error" });
+  }
 });
 
 
@@ -125,6 +161,65 @@ app.post("/register", async (req, res) => {
 
 
 // })
+import Task_model from "./Models/tasks.js"; // make sure correct path
+
+// Create a task
+app.post("/addtask", async (req, res) => {
+    try {
+        const { tasktitle, description, duedate, lon, lat } = req.body;
+
+        if (!tasktitle || !description || !duedate) {
+            return res.json({ message: "All fields required" });
+        }
+
+        const newTask = await Task_model.create({
+            tasktitle,
+            description,
+            duedate,
+            lon,
+            lat
+        });
+
+        return res.json({ status: true, task: newTask });
+    } catch (err) {
+        console.log(err);
+        res.json({ message: "Server error" });
+    }
+});
+
+// Get all tasks
+app.get("/tasks", async (req, res) => {
+    try {
+        const tasks = await Task_model.find();
+        res.json({ status: true, tasks });
+    } catch (err) {
+        res.json({ status: false, message: "Error fetching tasks" });
+    }
+});
+
+// Delete task
+app.delete("/tasks/:id", async (req, res) => {
+    try {
+        await Task_model.findByIdAndDelete(req.params.id);
+        res.json({ status: true });
+    } catch (err) {
+        res.json({ status: false });
+    }
+});
+
+// Update task
+app.put("/tasks/:id", async (req, res) => {
+    try {
+        const updated = await Task_model.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true }
+        );
+        res.json({ status: true, task: updated });
+    } catch (err) {
+        res.json({ status: false });
+    }
+});
 
 app.listen(7500, () => {
     console.log('server connected at port 7500 ...')

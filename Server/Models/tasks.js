@@ -4,9 +4,11 @@ const TaskSchema = new mongoose.Schema({
   tasktitle: { type: String, required: true },
   description: { type: String, required: true },
   duedate: { type: String, required: true },
-  lon: {type:String, required:false},
-  lat: {type:String, required:false}
+  lon: { type: String, required: false },
+  lat: { type: String, required: false },
+  status: { type: String, default: "pending" }  // 👈 NEW
 });
+
 
 
 const Task_model = mongoose.model("taskstable", TaskSchema, "taskstable");

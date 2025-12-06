@@ -39,7 +39,9 @@ const initialState = {
   userData: [],
   usersActive: null,
   loading: false,
+  currentUser: null,   // 👈 add this
 };
+
 
 const TaskTrackSlice = createSlice({
   name: "Slice",
@@ -53,12 +55,11 @@ const TaskTrackSlice = createSlice({
     });
 
     builder.addCase(RegisterDataThunk.fulfilled, (state, action) => {
-      state.loading = false;
+  state.loading = false;
+  state.usersActive = action.payload.status;
+  state.msg = action.payload.message || "";  
+});
 
-      state.msg ="LOGGED IN";
-      state.usersActive=action.payload.status
-      state.msg = "";
-    });
 
     builder.addCase(RegisterDataThunk.rejected, (state) => {
       state.loading = false;
@@ -73,10 +74,22 @@ const TaskTrackSlice = createSlice({
 
     builder.addCase(LoginThunk.fulfilled, (state, action) => {
       state.loading = false;
+      state.usersActive = !!action.payload.status;
+      state.msg = action.payload.message || "";
 
-      state.usersActive = action.payload.status;
-      state.msg = action.payload.message;
+      if (action.payload.status) {
+        state.currentUser = {
+          name: action.payload.name,
+          email: action.payload.email,
+          userId: action.payload.userId,
+          profileImage: action.payload.profileImage || ""
+        };
+      } else {
+        state.currentUser = null;
+      }
     });
+
+
 
     builder.addCase(LoginThunk.rejected, (state, action) => {
       state.loading = false;
