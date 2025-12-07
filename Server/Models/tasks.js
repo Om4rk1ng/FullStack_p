@@ -6,21 +6,12 @@ const TaskSchema = new mongoose.Schema({
   duedate: { type: String, required: true },
   lon: { type: String, required: false },
   lat: { type: String, required: false },
-  status: { type: String, default: "pending" }  // 👈 NEW
+  status: { type: String, default: "pending" },  // 👈 NEW
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "users" }
 });
 
 
 
 const Task_model = mongoose.model("taskstable", TaskSchema, "taskstable");
-
-
-/**
- 
-Model Name: The name Mongoose uses internally in its registry
-2nd Argument	UserSchema	Schema: The structure (rules, types) for the documents in the collection.
-3rd Argument	"userstable"	Collection Name (Explicit): The exact name of the collection in your MongoDB database where Mongoose will store the documents.
-
-
- */
 
 export default Task_model;

@@ -6,13 +6,16 @@ export default function Sidebar({ isOpen, toggle }) {
     const navigate = useNavigate();
 
 const handleLogout = () => {
-    localStorage.removeItem("name");
-    localStorage.removeItem("email");
-    localStorage.removeItem("profileImage");
-    localStorage.removeItem("userId");
+  // ✅ Clear all saved login data
+  localStorage.clear();
 
-    navigate("/"); // back to login page
+  // ✅ Force navigation and block going back to Home
+  navigate("/", { replace: true });
+
+  // ✅ Optional: refresh app to reset Redux state (fixes all glitches)
+  window.location.reload();
 };
+
     return (
         <div
             className="bg-dark text-white"

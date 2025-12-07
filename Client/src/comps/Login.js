@@ -20,7 +20,6 @@ export default function Login() {
  const handleSubmit = async (e) => {
   e.preventDefault();
 
-  // 🔥 SIMPLE VALIDATION RESTORED
   if (!email || !password) {
     alert("Please fill in both email and password.");
     return;
@@ -37,15 +36,24 @@ export default function Login() {
     const data = resultAction.payload;
 
     if (data?.status) {
-      localStorage.setItem("name", data.name || "");
-      localStorage.setItem("email", data.email || "");
-      localStorage.setItem("userId", data.userId || "");
-      localStorage.setItem("profileImage", data.profileImage || "");
-      localStorage.setItem("gender", data.gender || "");
-      localStorage.setItem("specialization", data.specialization || "");
+      // ✅ SUPPORT BOTH BACKEND FORMATS
+      const user = data.user || data;
+
+      if (!user) {
+        alert("Login succeeded but user data is missing.");
+        return;
+      }
+
+      localStorage.setItem("userId", user._id || user.userId || "");
+      localStorage.setItem("name", user.name || "");
+      localStorage.setItem("email", user.email || "");
+      localStorage.setItem("profileImage", user.profileImage || "");
+      localStorage.setItem("gender", user.gender || "");
+      localStorage.setItem("specialization", user.specialization || "");
     }
   }
 };
+
 
 
   useEffect(() => {
