@@ -42,13 +42,16 @@ app.post('/login', async (req, res) => {
     return res.json({
       status: true,
       message: "Login successful",
-      name: user.name,
-      email: user.Email,
-      userId: user._id,
-      profileImage: user.profileImage || "",
-      gender: user.gender || "",                     // 👈 NEW
-      specialization: user.specialization || ""      // 👈 NEW
+      user: {
+        _id: user._id,        
+        name: user.name,
+        email: user.Email,
+        profileImage: user.profileImage,
+        gender: user.gender,
+        specialization: user.specialization
+      }
     });
+
 
   } catch (error) {
     console.error(error);
@@ -201,82 +204,37 @@ app.delete("/delete-account/:id", async (req, res) => {
 });
 
 
-// app.get("/displayData",async(req,res)=>{
-
-//     try{
-
-//     const data=await User_model.find({}) //get all records
-
-//     res.status(200).send(data) //data sent as response to user
-//     }catch(err){
-//         res.status(401).send("Error "+err)
-//     }
-
-
-
-// })
-
-// app.delete("/deleteData/:delID",async(req,res)=>{
-
-
-//     const findUserByIDAndDelete=await User_model.findByIdAndDelete(req.params.delID)
-
-//     res.send(findUserByIDAndDelete) //Send filtered object to client
-
-// })
-
-
-
-//UPDATE data
-// app.put("/update/:updateID",async(req,res)=>{
-
-
-// try{
-//     const hash_password=await bcrypt.hash(req.body.Password)
-
-//     const findByIDAndUpdate=await User_model.findByIdAndUpdate(req.params.updateID,{
-//         name:req.body.name,
-//         Email:req.body.Email,
-//         Password:hash_password
-//     })
-
-//     res.send(findByIDAndUpdate)
-
-
-// }catch(err){
-
-//     console.log("Error "+err)
-// }
-
-
-// })
-import Task_model from "./Models/tasks.js"; // make sure correct path
+import Task_model from "./Models/tasks.js"; 
 
 // Create a task
 app.post("/addtask", async (req, res) => {
-    try {
-        const { tasktitle, description, duedate, lon, lat } = req.body;
+  try {
+    const { tasktitle, description, duedate, lon, lat, userId } = req.body;
 
-        if (!tasktitle || !description || !duedate) {
-            return res.json({ message: "All fields required" });
-        }
-
-        const newTask = await Task_model.create({
-            tasktitle,
-            description,
-            duedate,
-            lon,
-            lat
-        });
-
-        return res.json({ status: true, task: newTask });
-    } catch (err) {
-        console.log(err);
-        res.json({ message: "Server error" });
+    if (!tasktitle || !description || !duedate || !userId) {
+      return res.json({ status: false, message: "All fields required" });
     }
+
+    const newTask = await Task_model.create({
+      tasktitle,
+      description,
+      duedate,
+      lon,
+      lat,
+      userId
+    });
+
+    return res.json({ status: true, task: newTask });
+  } catch (err) {
+    console.log(err);
+    res.json({ status: false, message: "Server error" });
+  }
 });
 
+
+
 // Get all tasks
+<<<<<<< HEAD
 app.get("/tasks", async (req, res) => {
     try {
         const tasks = await Task_model.find({});
@@ -284,17 +242,28 @@ app.get("/tasks", async (req, res) => {
     } catch (err) {
         res.json({ status: false, message: "Error fetching tasks" });
     }
+=======
+app.get("/tasks/:userId", async (req, res) => {
+  try {
+    const tasks = await Task_model.find({ userId: req.params.userId });
+    res.json({ status: true, tasks });
+  } catch (err) {
+    res.json({ status: false, message: "Error fetching tasks" });
+  }
+>>>>>>> 7bb7ef6f9003de31e6306920d5a6a99bc47b5a6b
 });
+
 
 // Delete task
 app.delete("/tasks/:id", async (req, res) => {
-    try {
-        await Task_model.findByIdAndDelete(req.params.id);
-        res.json({ status: true });
-    } catch (err) {
-        res.json({ status: false });
-    }
+  try {
+    await Task_model.findByIdAndDelete(req.params.id);
+    res.json({ status: true });
+  } catch (err) {
+    res.json({ status: false });
+  }
 });
+
 
 // Update task
 app.put("/tasks/:id", async (req, res) => {

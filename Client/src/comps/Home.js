@@ -25,18 +25,25 @@ export default function Home() {
     const [taskDescription, setTaskDescription] = useState('');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
-    const [lon, setLon] = useState('');              // still used internally
-    const [lat, setLat] = useState('');              // still used internally
-    const [locationUrl, setLocationUrl] = useState(''); // 👈 NEW (what user types)
+    const [lon, setLon] = useState('');              
+    const [lat, setLat] = useState('');              
+    const [locationUrl, setLocationUrl] = useState(''); 
 
 
 
+    useEffect(() => {
+  const userId = localStorage.getItem("userId");
+
+  if (!userId) {
+    navigate("/", { replace: true }); // 🔒 force back to login
+  }
+}, [navigate]);
 
     useEffect(() => {
         const storedName = localStorage.getItem("name");
         if (storedName) setName(storedName);
 
-        const storedProfileImage = localStorage.getItem("profileImage"); // 👈 NEW
+        const storedProfileImage = localStorage.getItem("profileImage"); 
         if (storedProfileImage) setProfileImage(storedProfileImage);
 
         dispatch(fetchTasks());
@@ -56,7 +63,7 @@ export default function Home() {
             setEndDate('');
             setLon('');
             setLat('');
-            setLocationUrl('');   // 👈 NEW
+            setLocationUrl('');   
             setIsEditMode(false);
             setCurrentTaskId(null);
         }
@@ -86,13 +93,18 @@ export default function Home() {
             }
         }
 
+        const userId = localStorage.getItem("userId");
+
         const taskData = {
             tasktitle: taskTitle,
             description: taskDescription,
-            duedate: endDate, // using endDate as due date
+            duedate: endDate,
             lon: finalLon || "",
-            lat: finalLat || ""
+            lat: finalLat || "",
+            userId   
         };
+
+
 
         if (isEditMode) {
             dispatch(
@@ -120,7 +132,7 @@ export default function Home() {
         setLat(task.lat || "");
         setLocationUrl(
             task.lat && task.lon ? `https://www.google.com/maps?q=${task.lat},${task.lon}` : ""
-        ); // 👈 NEW
+        ); 
         toggleModal();
     };
 
@@ -133,33 +145,39 @@ export default function Home() {
     };
 
     const handleComplete = (task) => {
-    const updatedData = {
-        tasktitle: task.tasktitle,
-        description: task.description,
-        duedate: task.duedate,
-        lon: task.lon,
-        lat: task.lat,
-        status: "completed"
-    };
+        const updatedData = {
+            tasktitle: task.tasktitle,
+            description: task.description,
+            duedate: task.duedate,
+            lon: task.lon,
+            lat: task.lat,
+            status: "completed"
+        };
 
-    dispatch(updateTask({
-        id: task._id,
-        data: updatedData
-    }));
-};
+        dispatch(updateTask({
+            id: task._id,
+            data: updatedData
+        }));
+    };
 
 
 
 
     // Filter tasks based on search query
-    const filteredTasks = (tasks || []).filter(task =>
-        (task.tasktitle || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (task.description || "").toLowerCase().includes(searchQuery.toLowerCase())
-    );
+   const userId = localStorage.getItem("userId");
+
+const filteredTasks = (tasks || []).filter(task =>
+  task.userId === userId &&
+  (
+    (task.tasktitle || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (task.description || "").toLowerCase().includes(searchQuery.toLowerCase())
+  )
+);
+
 
     return (
         <div className="d-flex" id="wrapper" style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #ffffffff 0%, #fafafaff 100%)' }}>
-            <Sidebar isOpen={sidebarOpen} toggle={toggleSidebar}/>
+            <Sidebar isOpen={sidebarOpen} toggle={toggleSidebar} />
 
             <Container fluid className="p-5" style={{
                 transition: 'margin-left 0.3s ease',
@@ -180,14 +198,14 @@ export default function Home() {
                                 <img
                                     src={profileImage}
                                     alt={name || "Profile"}
-                                    onClick={() => navigate("/profile")}  // 👈 navigate to Profile
+                                    onClick={() => navigate("/profile")} 
                                     style={{
                                         width: "50px",
                                         height: "50px",
                                         borderRadius: "50%",
                                         objectFit: "cover",
                                         border: "2px solid #667eea",
-                                        cursor: "pointer",                 // 👈 so user knows it's clickable
+                                        cursor: "pointer",                 
                                     }}
                                 />
                             )}

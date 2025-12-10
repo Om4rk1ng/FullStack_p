@@ -39,7 +39,11 @@ const initialState = {
   userData: [],
   usersActive: null,
   loading: false,
+<<<<<<< HEAD
   currentUser: null,   //checking for user Login part
+=======
+  currentUser: null,   
+>>>>>>> 7bb7ef6f9003de31e6306920d5a6a99bc47b5a6b
 };
 
 
@@ -113,5 +117,9 @@ const TaskTrackSlice = createSlice({
   },
 });
 
+<<<<<<< HEAD
 
+=======
+// default export = reducer
+>>>>>>> 7bb7ef6f9003de31e6306920d5a6a99bc47b5a6b
 export default TaskTrackSlice.reducer;

@@ -4,16 +4,17 @@ import axios from "axios";
 
 const API = "http://localhost:7500";
 
-// Get all tasks
+// GET ONLY LOGGED-IN USER TASKS
 export const fetchTasks = createAsyncThunk(
   "tasks/fetch",
   async () => {
-    const res = await axios.get(`${API}/tasks`);
+    const userId = localStorage.getItem("userId"); 
+    const res = await axios.get(`${API}/tasks/${userId}`);
     return res.data.tasks;
   }
 );
 
-// Add task
+// ADD TASK (userId already attached in Home.js)
 export const addTask = createAsyncThunk(
   "tasks/add",
   async (taskData) => {
@@ -22,7 +23,7 @@ export const addTask = createAsyncThunk(
   }
 );
 
-// Delete task
+// DELETE TASK
 export const deleteTask = createAsyncThunk(
   "tasks/delete",
   async (id) => {
@@ -31,7 +32,7 @@ export const deleteTask = createAsyncThunk(
   }
 );
 
-// Update task
+// UPDATE TASK
 export const updateTask = createAsyncThunk(
   "tasks/update",
   async ({ id, data }) => {
@@ -40,6 +41,7 @@ export const updateTask = createAsyncThunk(
   }
 );
 
+// SLICE
 const taskSlice = createSlice({
   name: "tasks",
   initialState: {
@@ -47,9 +49,13 @@ const taskSlice = createSlice({
     loading: false,
     error: null,
   },
+
+  reducers: {},
+
   extraReducers: (builder) => {
     builder
-      // Fetch tasks
+
+      // FETCH
       .addCase(fetchTasks.pending, (state) => {
         state.loading = true;
       })
@@ -57,18 +63,21 @@ const taskSlice = createSlice({
         state.loading = false;
         state.items = action.payload;
       })
+      .addCase(fetchTasks.rejected, (state) => {
+        state.loading = false;
+      })
 
-      // Add task
+      // ADD
       .addCase(addTask.fulfilled, (state, action) => {
         state.items.push(action.payload);
       })
 
-      // Delete task
+      // DELETE
       .addCase(deleteTask.fulfilled, (state, action) => {
         state.items = state.items.filter((t) => t._id !== action.payload);
       })
 
-      // Update task
+      // UPDATE
       .addCase(updateTask.fulfilled, (state, action) => {
         state.items = state.items.map((t) =>
           t._id === action.payload._id ? action.payload : t
