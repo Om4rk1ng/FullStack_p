@@ -167,11 +167,13 @@ export default function Home() {
    const userId = localStorage.getItem("userId");
 
 const filteredTasks = (tasks || []).filter(task =>
-  task.userId === userId &&
-  (
-    (task.tasktitle || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (task.description || "").toLowerCase().includes(searchQuery.toLowerCase())
-  )
+ task && task.userId === userId &&  (
+
+    //make sure task is not empty && make sure the task belongs to the logged in user
+    
+ (task.tasktitle || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+  (task.description || "").toLowerCase().includes(searchQuery.toLowerCase())
+ )
 );
 
 
