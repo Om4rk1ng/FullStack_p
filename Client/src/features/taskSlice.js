@@ -4,17 +4,17 @@ import axios from "axios";
 
 const API = "http://localhost:7500";
 
-// ✅ GET ONLY LOGGED-IN USER TASKS
+// GET ONLY LOGGED-IN USER TASKS
 export const fetchTasks = createAsyncThunk(
   "tasks/fetch",
   async () => {
-    const userId = localStorage.getItem("userId"); // ✅ get current user
+    const userId = localStorage.getItem("userId"); 
     const res = await axios.get(`${API}/tasks/${userId}`);
     return res.data.tasks;
   }
 );
 
-// ✅ ADD TASK (userId already attached in Home.js)
+// ADD TASK (userId already attached in Home.js)
 export const addTask = createAsyncThunk(
   "tasks/add",
   async (taskData) => {
@@ -23,7 +23,7 @@ export const addTask = createAsyncThunk(
   }
 );
 
-// ✅ DELETE TASK
+// DELETE TASK
 export const deleteTask = createAsyncThunk(
   "tasks/delete",
   async (id) => {
@@ -32,7 +32,7 @@ export const deleteTask = createAsyncThunk(
   }
 );
 
-// ✅ UPDATE TASK
+// UPDATE TASK
 export const updateTask = createAsyncThunk(
   "tasks/update",
   async ({ id, data }) => {
@@ -41,7 +41,7 @@ export const updateTask = createAsyncThunk(
   }
 );
 
-// ✅ SLICE
+// SLICE
 const taskSlice = createSlice({
   name: "tasks",
   initialState: {
@@ -55,7 +55,7 @@ const taskSlice = createSlice({
   extraReducers: (builder) => {
     builder
 
-      // ✅ FETCH
+      // FETCH
       .addCase(fetchTasks.pending, (state) => {
         state.loading = true;
       })
@@ -67,17 +67,17 @@ const taskSlice = createSlice({
         state.loading = false;
       })
 
-      // ✅ ADD
+      // ADD
       .addCase(addTask.fulfilled, (state, action) => {
         state.items.push(action.payload);
       })
 
-      // ✅ DELETE
+      // DELETE
       .addCase(deleteTask.fulfilled, (state, action) => {
         state.items = state.items.filter((t) => t._id !== action.payload);
       })
 
-      // ✅ UPDATE
+      // UPDATE
       .addCase(updateTask.fulfilled, (state, action) => {
         state.items = state.items.map((t) =>
           t._id === action.payload._id ? action.payload : t

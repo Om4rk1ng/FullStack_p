@@ -43,7 +43,7 @@ app.post('/login', async (req, res) => {
       status: true,
       message: "Login successful",
       user: {
-        _id: user._id,        // ✅ ADD THIS LINE
+        _id: user._id,        
         name: user.name,
         email: user.Email,
         profileImage: user.profileImage,
@@ -67,8 +67,8 @@ app.post("/register", async (req, res) => {
       _email, 
       _password, 
       _profileImage,
-      _gender,            // 👈 NEW
-      _specialization     // 👈 NEW
+      _gender,            
+      _specialization     
     } = req.body;
 
     const existingUser = await User_model.findOne({ Email: _email });
@@ -87,8 +87,8 @@ app.post("/register", async (req, res) => {
       Email: _email,
       Password: hash_password,
       profileImage: _profileImage || "",
-      gender: _gender || "",                 // 👈 NEW
-      specialization: _specialization || ""  // 👈 NEW
+      gender: _gender || "",                 
+      specialization: _specialization || ""  
     });
 
     return res.json({
@@ -164,7 +164,7 @@ app.delete("/delete-account/:id", async (req, res) => {
 });
 
 
-import Task_model from "./Models/tasks.js"; // make sure correct path
+import Task_model from "./Models/tasks.js"; 
 
 // Create a task
 app.post("/addtask", async (req, res) => {

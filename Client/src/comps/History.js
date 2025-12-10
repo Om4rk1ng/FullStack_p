@@ -107,7 +107,6 @@ const History = () => {
                                                     <h5 className="task-title">{task.tasktitle}</h5>
                                                     <p className="task-description">{task.description}</p>
 
-                                                    {/* 👇 NEW: Due date line (same data as Home.js) */}
                                                     {task.duedate && (
                                                         <p className="task-date">
                                                             <strong>Due:</strong>{" "}
@@ -117,7 +116,6 @@ const History = () => {
                                                 </div>
                                             </div>
 
-                                            {/* 👇 NEW: Map preview (same logic as Home.js), but kept below content to preserve layout */}
                                             {task.lat && task.lon && (
                                                 <div style={{ marginTop: "10px" }}>
                                                     <iframe

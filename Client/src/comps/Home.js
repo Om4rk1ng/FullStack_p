@@ -25,9 +25,9 @@ export default function Home() {
     const [taskDescription, setTaskDescription] = useState('');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
-    const [lon, setLon] = useState('');              // still used internally
-    const [lat, setLat] = useState('');              // still used internally
-    const [locationUrl, setLocationUrl] = useState(''); // 👈 NEW (what user types)
+    const [lon, setLon] = useState('');              
+    const [lat, setLat] = useState('');              
+    const [locationUrl, setLocationUrl] = useState(''); 
 
 
 
@@ -43,7 +43,7 @@ export default function Home() {
         const storedName = localStorage.getItem("name");
         if (storedName) setName(storedName);
 
-        const storedProfileImage = localStorage.getItem("profileImage"); // 👈 NEW
+        const storedProfileImage = localStorage.getItem("profileImage"); 
         if (storedProfileImage) setProfileImage(storedProfileImage);
 
         dispatch(fetchTasks());
@@ -63,7 +63,7 @@ export default function Home() {
             setEndDate('');
             setLon('');
             setLat('');
-            setLocationUrl('');   // 👈 NEW
+            setLocationUrl('');   
             setIsEditMode(false);
             setCurrentTaskId(null);
         }
@@ -101,7 +101,7 @@ export default function Home() {
             duedate: endDate,
             lon: finalLon || "",
             lat: finalLat || "",
-            userId   // ✅ VERY IMPORTANT
+            userId   
         };
 
 
@@ -132,7 +132,7 @@ export default function Home() {
         setLat(task.lat || "");
         setLocationUrl(
             task.lat && task.lon ? `https://www.google.com/maps?q=${task.lat},${task.lon}` : ""
-        ); // 👈 NEW
+        ); 
         toggleModal();
     };
 
@@ -198,14 +198,14 @@ const filteredTasks = (tasks || []).filter(task =>
                                 <img
                                     src={profileImage}
                                     alt={name || "Profile"}
-                                    onClick={() => navigate("/profile")}  // 👈 navigate to Profile
+                                    onClick={() => navigate("/profile")} 
                                     style={{
                                         width: "50px",
                                         height: "50px",
                                         borderRadius: "50%",
                                         objectFit: "cover",
                                         border: "2px solid #667eea",
-                                        cursor: "pointer",                 // 👈 so user knows it's clickable
+                                        cursor: "pointer",                 
                                     }}
                                 />
                             )}

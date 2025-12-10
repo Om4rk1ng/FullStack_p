@@ -6,7 +6,7 @@ const TaskSchema = new mongoose.Schema({
   duedate: { type: String, required: true },
   lon: { type: String, required: false },
   lat: { type: String, required: false },
-  status: { type: String, default: "pending" },  // 👈 NEW
+  status: { type: String, default: "pending" }, 
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "users" }
 });
 

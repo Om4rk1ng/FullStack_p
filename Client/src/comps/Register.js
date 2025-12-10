@@ -13,8 +13,8 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [profileImage, setProfileImage] = useState("");
 
-  const [gender, setGender] = useState("");              // 👈 NEW
-  const [specialization, setSpecialization] = useState(""); // 👈 NEW
+  const [gender, setGender] = useState("");              
+  const [specialization, setSpecialization] = useState(""); 
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -42,8 +42,8 @@ export default function Register() {
       _email: email,
       _password: password,
       _profileImage: profileImage,
-      _gender: gender,                     // 👈 NEW
-      _specialization: specialization,     // 👈 NEW
+      _gender: gender,                     
+      _specialization: specialization,     
     };
 
     try {

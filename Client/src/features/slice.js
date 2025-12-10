@@ -39,7 +39,7 @@ const initialState = {
   userData: [],
   usersActive: null,
   loading: false,
-  currentUser: null,   // 👈 add this
+  currentUser: null,   
 };
 
 
@@ -113,5 +113,5 @@ const TaskTrackSlice = createSlice({
   },
 });
 
-// 👇 default export = reducer
+// default export = reducer
 export default TaskTrackSlice.reducer;

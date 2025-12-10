@@ -6,13 +6,13 @@ export default function Sidebar({ isOpen, toggle }) {
     const navigate = useNavigate();
 
 const handleLogout = () => {
-  // ✅ Clear all saved login data
+  // Clear all saved login data
   localStorage.clear();
 
-  // ✅ Force navigation and block going back to Home
+  // Force navigation and block going back to Home
   navigate("/", { replace: true });
 
-  // ✅ Optional: refresh app to reset Redux state (fixes all glitches)
+  // Optional: refresh app to reset Redux state (fixes all glitches)
   window.location.reload();
 };
 
@@ -108,7 +108,7 @@ const handleLogout = () => {
                 <ListGroupItem
                     action
                     tag="button"
-                    onClick={handleLogout} // 👈 USE logout function instead of navigate
+                    onClick={handleLogout} 
                     className="bg-dark text-white border-secondary d-flex align-items-center"
                     style={{
                         transition: 'all 0.3s ease',
