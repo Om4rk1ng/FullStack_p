@@ -74,7 +74,7 @@ export default function Login() {
             <Form onSubmit={handleSubmit}>
               <FormGroup>
                 <Label for="email">Email</Label>
-                <Input
+                <Input data-testid="login_emailBox"
                   type="email"
                   name="email"
                   id="email"

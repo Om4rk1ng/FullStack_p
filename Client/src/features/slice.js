@@ -39,7 +39,7 @@ const initialState = {
   userData: [],
   usersActive: null,
   loading: false,
-  currentUser: null,   // 👈 add this
+  currentUser: null,   //checking for user Login part
 };
 
 
@@ -74,7 +74,7 @@ const TaskTrackSlice = createSlice({
 
     builder.addCase(LoginThunk.fulfilled, (state, action) => {
       state.loading = false;
-      state.usersActive = !!action.payload.status;
+      state.usersActive = !!action.payload.status; //!! converts this data from a datatype to boolean
       state.msg = action.payload.message || "";
 
       if (action.payload.status) {
@@ -113,5 +113,5 @@ const TaskTrackSlice = createSlice({
   },
 });
 
-// 👇 default export = reducer
+
 export default TaskTrackSlice.reducer;

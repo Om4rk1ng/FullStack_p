@@ -64,8 +64,8 @@ app.post("/register", async (req, res) => {
       _email, 
       _password, 
       _profileImage,
-      _gender,            // 👈 NEW
-      _specialization     // 👈 NEW
+      _gender,            
+      _specialization     
     } = req.body;
 
     const existingUser = await User_model.findOne({ Email: _email });
@@ -84,8 +84,8 @@ app.post("/register", async (req, res) => {
       Email: _email,
       Password: hash_password,
       profileImage: _profileImage || "",
-      gender: _gender || "",                 // 👈 NEW
-      specialization: _specialization || ""  // 👈 NEW
+      gender: _gender || "",                 
+      specialization: _specialization || ""  
     });
 
     return res.json({
@@ -100,11 +100,49 @@ app.post("/register", async (req, res) => {
 });
 
 
+
+app.get("/showAllTasks",async(req,res)=>{
+
+const getTaskData=await Task_model.aggregate([
+{
+$lookup:{
+  from: "userstable",
+  localField:"userTaskEmail",
+  foreignField:"Email",
+  as:"UserTasks"
+}
+
+},
+{
+$sort:{
+  duedate:-1 //show latest tasks
+}},
+
+
+// {
+// "$project":{
+//   "USerTasks.userTaskEmail":0,
+  
+// }}
+
+
+
+
+
+])
+
+
+res.send(getTaskData)
+console.log(getTaskData)
+
+})
+
 app.post("/reset-password", async (req, res) => {
   const { email, newPassword } = req.body;
 
   try {
     const user = await User_model.findOne({ Email: email });
+    //for only checking IF user with that email exist
 
     if (!user) {
       return res.json({ status: false, message: "User not found" });
@@ -133,7 +171,9 @@ app.put("/update-profile", async (req, res) => {
       { new: true }
     );
 
-    if (!updated) {
+    if (!updated)  {
+
+      //this part not needed
       return res.json({ status: false, message: "User not found" });
     }
 
@@ -239,7 +279,7 @@ app.post("/addtask", async (req, res) => {
 // Get all tasks
 app.get("/tasks", async (req, res) => {
     try {
-        const tasks = await Task_model.find();
+        const tasks = await Task_model.find({});
         res.json({ status: true, tasks });
     } catch (err) {
         res.json({ status: false, message: "Error fetching tasks" });
