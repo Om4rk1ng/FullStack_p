@@ -1,36 +1,61 @@
-// slice.js
+// src/features/slice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import Axios from "axios";
 
+const API_URL = "https://fullstack-server-4doi.onrender.com";
+
+// REGISTER
 export const RegisterDataThunk = createAsyncThunk(
   "user/register",
-  async (userData) => {
-    const requestToPost = await Axios.post(
-      "http://localhost:7500/register",
-      userData
-    );
-    return requestToPost.data;
+  async (userData, { rejectWithValue }) => {
+    try {
+      const res = await Axios.post(`${API_URL}/register`, userData);
+
+      // backend: { status: true/false, message: "..." }
+      if (!res.data?.status) {
+        return rejectWithValue(res.data);
+      }
+
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data || { status: false, message: "Network or server error" }
+      );
+    }
   }
 );
 
+// LOGIN
 export const LoginThunk = createAsyncThunk(
   "user/login",
-  async (userLoginData) => {
-    const requestToPost = await Axios.post(
-      "http://localhost:7500/login",
-      userLoginData
-    );
-    return requestToPost.data;
+  async (userLoginData, { rejectWithValue }) => {
+    try {
+      const res = await Axios.post(`${API_URL}/login`, userLoginData);
+      // backend: { status, message, user: {...} }
+      if (!res.data?.status) {
+        return rejectWithValue(res.data);
+      }
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data || { status: false, message: "Network or server error" }
+      );
+    }
   }
 );
 
+// (Only works if you later add /displayData backend route)
 export const showDataThunk = createAsyncThunk(
   "user/displayData",
-  async () => {
-    const requestToGetData = await Axios.get(
-      "http://localhost:7500/displayData"
-    );
-    return requestToGetData.data;
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await Axios.get(`${API_URL}/displayData`);
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data || { status: false, message: "Error fetching data" }
+      );
+    }
   }
 );
 
@@ -39,34 +64,34 @@ const initialState = {
   userData: [],
   usersActive: null,
   loading: false,
-  currentUser: null,   
+  currentUser: null,
 };
-
 
 const TaskTrackSlice = createSlice({
   name: "Slice",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    // Register
+    // REGISTER
     builder.addCase(RegisterDataThunk.pending, (state) => {
       state.loading = true;
       state.msg = "Please wait, data is being inserted!!";
     });
 
     builder.addCase(RegisterDataThunk.fulfilled, (state, action) => {
-  state.loading = false;
-  state.usersActive = action.payload.status;
-  state.msg = action.payload.message || "";  
-});
-
-
-    builder.addCase(RegisterDataThunk.rejected, (state) => {
       state.loading = false;
-      state.msg = "Something went wrong while inserting!!";
+      state.usersActive = action.payload.status;
+      state.msg = action.payload.message || "";
     });
 
-    // Login
+    builder.addCase(RegisterDataThunk.rejected, (state, action) => {
+      state.loading = false;
+      state.usersActive = false;
+      state.msg =
+        action.payload?.message || "Something went wrong while inserting!!";
+    });
+
+    // LOGIN
     builder.addCase(LoginThunk.pending, (state) => {
       state.loading = true;
       state.msg = "";
@@ -74,29 +99,30 @@ const TaskTrackSlice = createSlice({
 
     builder.addCase(LoginThunk.fulfilled, (state, action) => {
       state.loading = false;
-      state.usersActive = !!action.payload.status;
+      state.usersActive = true;
       state.msg = action.payload.message || "";
 
-      if (action.payload.status) {
+      const user = action.payload.user; // from backend
+      if (user) {
         state.currentUser = {
-          name: action.payload.name,
-          email: action.payload.email,
-          userId: action.payload.userId,
-          profileImage: action.payload.profileImage || ""
+          userId: user._id,
+          name: user.name,
+          email: user.email,
+          profileImage: user.profileImage || "",
+          gender: user.gender || "",
+          specialization: user.specialization || "",
         };
-      } else {
-        state.currentUser = null;
       }
     });
 
-
-
     builder.addCase(LoginThunk.rejected, (state, action) => {
       state.loading = false;
-      state.msg = ""
+      state.usersActive = false;
+      state.currentUser = null;
+      state.msg = action.payload?.message || "Login failed";
     });
 
-    // Show data
+    // SHOW DATA
     builder.addCase(showDataThunk.pending, (state) => {
       state.loading = true;
     });
@@ -106,12 +132,11 @@ const TaskTrackSlice = createSlice({
       state.userData = action.payload;
     });
 
-    builder.addCase(showDataThunk.rejected, (state) => {
+    builder.addCase(showDataThunk.rejected, (state, action) => {
       state.loading = false;
-      state.msg = "Error occured!!!!";
+      state.msg = action.payload?.message || "Error occured!!!!";
     });
   },
 });
 
-// default export = reducer
 export default TaskTrackSlice.reducer;

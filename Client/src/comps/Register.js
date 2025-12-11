@@ -20,50 +20,54 @@ export default function Register() {
   const dispatch = useDispatch();
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!name || !email || !password) {
-      alert("Please fill in all required fields");
-      return;
-    }
+  if (!name || !email || !password) {
+    alert("Please fill in all required fields");
+    return;
+  }
 
-    if (!gender) {
-      alert("Please select your gender");
-      return;
-    }
+  if (!gender) {
+    alert("Please select your gender");
+    return;
+  }
 
-    if (!specialization) {
-      alert("Please select your specialization");
-      return;
-    }
+  if (!specialization) {
+    alert("Please select your specialization");
+    return;
+  }
 
-    const newUserRegisterData = {
-      _username: name,
-      _email: email,
-      _password: password,
-      _profileImage: profileImage,
-      _gender: gender,                     
-      _specialization: specialization,     
-    };
-
-    try {
-      const resultAction = await dispatch(RegisterDataThunk(newUserRegisterData));
-
-      if (RegisterDataThunk.fulfilled.match(resultAction)) {
-        if (profileImage) {
-          localStorage.setItem("profileImage", profileImage);
-        }
-        alert("Registration Successful\nYou have successfully registered!");
-        navigate("/");
-      } else {
-        console.error("Registration failed:", resultAction.payload || resultAction.error);
-        alert("Registration failed. Please try again.");
-      }
-    } catch (err) {
-      console.error("Unexpected error during registration:", err);
-      alert("Unexpected error. Please try again.");
-    }
+  const newUserRegisterData = {
+    _username: name,
+    _email: email,
+    _password: password,
+    _profileImage: profileImage,
+    _gender: gender,
+    _specialization: specialization,
   };
+
+  try {
+    const resultAction = await dispatch(RegisterDataThunk(newUserRegisterData));
+
+    if (RegisterDataThunk.fulfilled.match(resultAction)) {
+      const data = resultAction.payload;
+
+      if (profileImage) {
+        localStorage.setItem("profileImage", profileImage);
+      }
+      alert(data?.message || "Registration Successful\nYou have successfully registered!");
+      navigate("/");
+    } else {
+      const errorData = resultAction.payload || resultAction.error;
+      console.error("Registration failed:", errorData);
+      alert(errorData?.message || "Registration failed. Please try again.");
+    }
+  } catch (err) {
+    console.error("Unexpected error during registration:", err);
+    alert("Unexpected error. Please try again.");
+  }
+};
+
 
   return (
     <div className="login-page d-flex align-items-center justify-content-center">

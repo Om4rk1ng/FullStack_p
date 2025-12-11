@@ -2,46 +2,73 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const API = "http://localhost:7500";
+const API = "https://fullstack-server-4doi.onrender.com";
 
 // GET ONLY LOGGED-IN USER TASKS
 export const fetchTasks = createAsyncThunk(
   "tasks/fetch",
-  async () => {
-    const userId = localStorage.getItem("userId"); 
-    const res = await axios.get(`${API}/tasks/${userId}`);
-    return res.data.tasks;
+  async (_, { rejectWithValue }) => {
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      return rejectWithValue({ message: "User not logged in" });
+    }
+
+    try {
+      const res = await axios.get(`${API}/tasks/${userId}`);
+      return res.data.tasks || [];
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data || { message: "Error fetching tasks" }
+      );
+    }
   }
 );
 
-// ADD TASK (userId already attached in Home.js)
+// ADD TASK
 export const addTask = createAsyncThunk(
   "tasks/add",
-  async (taskData) => {
-    const res = await axios.post(`${API}/addtask`, taskData);
-    return res.data.task;
+  async (taskData, { rejectWithValue }) => {
+    try {
+      const res = await axios.post(`${API}/addtask`, taskData);
+      return res.data.task;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data || { message: "Error adding task" }
+      );
+    }
   }
 );
 
 // DELETE TASK
 export const deleteTask = createAsyncThunk(
   "tasks/delete",
-  async (id) => {
-    await axios.delete(`${API}/tasks/${id}`);
-    return id;
+  async (id, { rejectWithValue }) => {
+    try {
+      await axios.delete(`${API}/tasks/${id}`);
+      return id;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data || { message: "Error deleting task" }
+      );
+    }
   }
 );
 
 // UPDATE TASK
 export const updateTask = createAsyncThunk(
   "tasks/update",
-  async ({ id, data }) => {
-    const res = await axios.put(`${API}/tasks/${id}`, data);
-    return res.data.task;
+  async ({ id, data }, { rejectWithValue }) => {
+    try {
+      const res = await axios.put(`${API}/tasks/${id}`, data);
+      return res.data.task;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data || { message: "Error updating task" }
+      );
+    }
   }
 );
 
-// SLICE
 const taskSlice = createSlice({
   name: "tasks",
   initialState: {
@@ -49,22 +76,21 @@ const taskSlice = createSlice({
     loading: false,
     error: null,
   },
-
   reducers: {},
-
   extraReducers: (builder) => {
     builder
-
       // FETCH
       .addCase(fetchTasks.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(fetchTasks.fulfilled, (state, action) => {
         state.loading = false;
         state.items = action.payload;
       })
-      .addCase(fetchTasks.rejected, (state) => {
+      .addCase(fetchTasks.rejected, (state, action) => {
         state.loading = false;
+        state.error = action.payload?.message || "Failed to fetch tasks";
       })
 
       // ADD

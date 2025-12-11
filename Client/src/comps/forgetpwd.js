@@ -14,6 +14,8 @@ import LoginImage from "./images/Cover.png";
 import "./Login.css";
 import axios from "axios";
 
+const API_URL = "https://fullstack-server-4doi.onrender.com";
+
 export default function ForgotPass() {
   const navigate = useNavigate();
 
@@ -48,7 +50,7 @@ export default function ForgotPass() {
     try {
       setLoading(true);
 
-      const res = await axios.post("http://localhost:7500/reset-password", {
+      const res = await axios.post(`${API_URL}/reset-password`, {
         email,
         newPassword,
       });
