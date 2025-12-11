@@ -52,10 +52,19 @@ export const LoginThunk = createAsyncThunk(
 export const showDataThunk = createAsyncThunk(
   "user/displayData",
   async () => {
-    const requestToGetData = await Axios.get(
-      "http://localhost:7500/displayData"
+    
+    // const requestToGetData = await Axios.get(
+    //   "http://localhost:7500/displayData"
+    // );
+    // return requestToGetData.data;
+  
+  
+     const requestToGetData = await Axios.get(
+      `${serverENVURL}/displayData`
     );
-    return requestToGetData.data;
+
+    return requestToGetData.data
+  
   }
 );
 
