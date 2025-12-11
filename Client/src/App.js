@@ -1,7 +1,7 @@
 
 import './App.css';
 import LoginPage from './comps/Login';
-import { BrowserRouter, Routes, Route} from "react-router-dom"
+import { BrowserRouter, Routes, Route, HashRouter} from "react-router-dom"
 import Register from './comps/Register.js';
 import Home from './comps/Home';
 import History from './comps/History';
@@ -16,7 +16,7 @@ import ForgotPass from './comps/forgetpwd.js';
 function App() {
   return (
   
-    <BrowserRouter basename='/'>
+    <HashRouter>
 
       <Routes>
         <Route path='/' element={<LoginPage />} />
@@ -27,7 +27,7 @@ function App() {
         <Route path='/profile' element={<Profile />} />
         <Route path="/reset-password" element={<ForgotPass />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
 
 
   );
