@@ -4,20 +4,11 @@ import Axios from "axios";
 
 export const RegisterDataThunk = createAsyncThunk(
   "user/register",
-  // async (userData) => {
-  //   const requestToPost = await Axios.post(
-  //     "http://localhost:7500/register",
-  //     userData
-  //   );
-  //   return requestToPost.data;
-  // }
-
-
-
-    async (userData) => {
-    const serverENVURL=process.env.REACT_APP_CONNECTION
-const requestToPost = await Axios.post(`${serverENVURL}/register`, userData);
-
+  async (userData) => {
+    const requestToPost = await Axios.post(
+      "http://localhost:7500/register",
+      userData
+    );
     return requestToPost.data;
   }
 
@@ -25,21 +16,10 @@ const requestToPost = await Axios.post(`${serverENVURL}/register`, userData);
 
 export const LoginThunk = createAsyncThunk(
   "user/login",
-  // async (userLoginData) => {
-  //   const requestToPost = await Axios.post(
-  //     "http://localhost:7500/login",
-  //     userLoginData
-  //   );
-  //   return requestToPost.data;
-  // }
 
-
-
-    async (userLoginData) => {
-          const serverENVURL=process.env.REACT_APP_CONNECTION
-
+  async (userLoginData) => {
     const requestToPost = await Axios.post(
-      `${serverENVURL}/login`,
+      "http://localhost:7500/login",
       userLoginData
     );
     return requestToPost.data;
@@ -52,21 +32,13 @@ export const LoginThunk = createAsyncThunk(
 export const showDataThunk = createAsyncThunk(
   "user/displayData",
   async () => {
-              const serverENVURL=process.env.REACT_APP_CONNECTION
-
     
-    // const requestToGetData = await Axios.get(
-    //   "http://localhost:7500/displayData"
-    // );
-    // return requestToGetData.data;
-  
-  
-     const requestToGetData = await Axios.get(
-
-      `${serverENVURL}/displayData`
+    const requestToGetData = await Axios.get(
+      "http://localhost:7500/displayData"
     );
+    return requestToGetData.data;
+  
 
-    return requestToGetData.data
   
   }
 );
