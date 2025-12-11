@@ -52,6 +52,8 @@ export const LoginThunk = createAsyncThunk(
 export const showDataThunk = createAsyncThunk(
   "user/displayData",
   async () => {
+              const serverENVURL=process.env.REACT_APP_CONNECTION
+
     
     // const requestToGetData = await Axios.get(
     //   "http://localhost:7500/displayData"
@@ -60,6 +62,7 @@ export const showDataThunk = createAsyncThunk(
   
   
      const requestToGetData = await Axios.get(
+
       `${serverENVURL}/displayData`
     );
 
