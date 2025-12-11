@@ -17,42 +17,42 @@ export default function Login() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    if (!email || !password) {
-      alert("Please fill in both email and password.");
-      return;
-    }
+  if (!email || !password) {
+    alert("Please fill in both email and password.");
+    return;
+  }
 
-    const userLoginData = {
-      _userLoginEmail: email,
-      _userLoginPassword: password,
-    };
-
-    const resultAction = await dispatch(LoginThunk(userLoginData));
-
-    if (LoginThunk.fulfilled.match(resultAction)) {
-      const data = resultAction.payload;
-
-      if (data?.status) {
-        // ✅ SUPPORT BOTH BACKEND FORMATS
-        const user = data.user || data;
-
-        if (!user) {
-          alert("Login succeeded but user data is missing.");
-          return;
-        }
-
-        localStorage.setItem("userId", user._id || user.userId || "");
-        localStorage.setItem("name", user.name || "");
-        localStorage.setItem("email", user.email || "");
-        localStorage.setItem("profileImage", user.profileImage || "");
-        localStorage.setItem("gender", user.gender || "");
-        localStorage.setItem("specialization", user.specialization || "");
-      }
-    }
+  const userLoginData = {
+    _userLoginEmail: email,
+    _userLoginPassword: password,
   };
+
+  const resultAction = await dispatch(LoginThunk(userLoginData));
+
+  if (LoginThunk.fulfilled.match(resultAction)) {
+    const data = resultAction.payload;
+
+    if (data?.status) {
+      // ✅ SUPPORT BOTH BACKEND FORMATS
+      const user = data.user || data;
+
+      if (!user) {
+        alert("Login succeeded but user data is missing.");
+        return;
+      }
+
+      localStorage.setItem("userId", user._id || user.userId || "");
+      localStorage.setItem("name", user.name || "");
+      localStorage.setItem("email", user.email || "");
+      localStorage.setItem("profileImage", user.profileImage || "");
+      localStorage.setItem("gender", user.gender || "");
+      localStorage.setItem("specialization", user.specialization || "");
+    }
+  }
+};
 
 
 
@@ -86,7 +86,6 @@ export default function Login() {
                   type="email"
                   name="email"
                   id="email"
-                  data-testid="login_emailBox"
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
