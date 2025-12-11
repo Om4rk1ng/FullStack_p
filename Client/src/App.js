@@ -16,7 +16,7 @@ import ForgotPass from './comps/forgetpwd.js';
 function App() {
   return (
   
-    <BrowserRouter basename='/'>
+    <BrowserRouter basename="/">
 
       <Routes>
         <Route path='/' element={<LoginPage />} />
