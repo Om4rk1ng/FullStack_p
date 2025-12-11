@@ -4,24 +4,49 @@ import Axios from "axios";
 
 export const RegisterDataThunk = createAsyncThunk(
   "user/register",
-  async (userData) => {
-    const requestToPost = await Axios.post(
-      "http://localhost:7500/register",
-      userData
-    );
+  // async (userData) => {
+  //   const requestToPost = await Axios.post(
+  //     "http://localhost:7500/register",
+  //     userData
+  //   );
+  //   return requestToPost.data;
+  // }
+
+
+  
+    async (userData) => {
+    const serverENVURL=process.env.REACT_SERVER_RENDER_URL
+const requestToPost = await axios.post(`${serverENVURL}/register`, userData);
+
     return requestToPost.data;
   }
+
 );
 
 export const LoginThunk = createAsyncThunk(
   "user/login",
-  async (userLoginData) => {
+  // async (userLoginData) => {
+  //   const requestToPost = await Axios.post(
+  //     "http://localhost:7500/login",
+  //     userLoginData
+  //   );
+  //   return requestToPost.data;
+  // }
+
+
+
+    async (userLoginData) => {
+          const serverENVURL=process.env.REACT_SERVER_RENDER_URL
+
     const requestToPost = await Axios.post(
-      "http://localhost:7500/login",
+      `${serverENVURL}/login`,
       userLoginData
     );
     return requestToPost.data;
   }
+
+
+
 );
 
 export const showDataThunk = createAsyncThunk(
