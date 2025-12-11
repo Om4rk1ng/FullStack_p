@@ -3,7 +3,7 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import User_model from './Models/users.js';
 import bcrypt from 'bcrypt';
-
+import 'dotenv/config'; // Load env vars
 
 
 const app = express();
@@ -14,12 +14,12 @@ app.use(express.json());
 
 
 try {
-    const conStr = 'mongodb+srv://admin:admin123@fullstack.5m4vetd.mongodb.net/users';
-    mongoose.connect(conStr);
-    console.log('database is connected!!')
+  const conStr = process.env.MONGO_URI;
+  mongoose.connect(conStr);
+  console.log('database is connected!!')
 }
 catch (error) {
-    console.log(error);
+  console.log(error);
 }
 
 app.post('/login', async (req, res) => {
@@ -43,7 +43,7 @@ app.post('/login', async (req, res) => {
       status: true,
       message: "Login successful",
       user: {
-        _id: user._id,        
+        _id: user._id,
         name: user.name,
         email: user.Email,
         profileImage: user.profileImage,
@@ -62,13 +62,13 @@ app.post('/login', async (req, res) => {
 
 app.post("/register", async (req, res) => {
   try {
-    const { 
-      _username, 
-      _email, 
-      _password, 
+    const {
+      _username,
+      _email,
+      _password,
       _profileImage,
-      _gender,            
-      _specialization     
+      _gender,
+      _specialization
     } = req.body;
 
     const existingUser = await User_model.findOne({ Email: _email });
@@ -87,8 +87,8 @@ app.post("/register", async (req, res) => {
       Email: _email,
       Password: hash_password,
       profileImage: _profileImage || "",
-      gender: _gender || "",                 
-      specialization: _specialization || ""  
+      gender: _gender || "",
+      specialization: _specialization || ""
     });
 
     return res.json({
@@ -164,7 +164,7 @@ app.delete("/delete-account/:id", async (req, res) => {
 });
 
 
-import Task_model from "./Models/tasks.js"; 
+import Task_model from "./Models/tasks.js";
 
 // Create a task
 app.post("/addtask", async (req, res) => {
@@ -217,18 +217,19 @@ app.delete("/tasks/:id", async (req, res) => {
 
 // Update task
 app.put("/tasks/:id", async (req, res) => {
-    try {
-        const updated = await Task_model.findByIdAndUpdate(
-            req.params.id,
-            req.body,
-            { new: true }
-        );
-        res.json({ status: true, task: updated });
-    } catch (err) {
-        res.json({ status: false });
-    }
+  try {
+    const updated = await Task_model.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    res.json({ status: true, task: updated });
+  } catch (err) {
+    res.json({ status: false });
+  }
 });
 
-app.listen(7500, () => {
-    console.log('server connected at port 7500 ...')
+const PORT = process.env.PORT || 7500;
+app.listen(PORT, () => {
+  console.log(`server connected at port ${PORT} ...`)
 })
