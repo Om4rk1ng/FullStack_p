@@ -22,6 +22,10 @@ catch (error) {
   console.log(error);
 }
 
+app.get("/", (req, res) => {
+  res.json({ status: true, message: "API is running 🚀" });
+});
+
 app.post('/login', async (req, res) => {
   try {
     const { _userLoginEmail, _userLoginPassword } = req.body;
