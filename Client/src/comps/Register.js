@@ -13,14 +13,19 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [profileImage, setProfileImage] = useState("");
 
-  const [gender, setGender] = useState("");              
-  const [specialization, setSpecialization] = useState(""); 
+  const [gender, setGender] = useState("");
+  const [specialization, setSpecialization] = useState("");
+
+  // 🔹 NEW: to show backend message like "User already exists"
+  const [serverMessage, setServerMessage] = useState("");
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    setServerMessage(""); // clear old msg
 
     if (!name || !email || !password) {
       alert("Please fill in all required fields");
@@ -42,26 +47,39 @@ export default function Register() {
       _email: email,
       _password: password,
       _profileImage: profileImage,
-      _gender: gender,                     
-      _specialization: specialization,     
+      _gender: gender,
+      _specialization: specialization,
     };
 
     try {
       const resultAction = await dispatch(RegisterDataThunk(newUserRegisterData));
 
       if (RegisterDataThunk.fulfilled.match(resultAction)) {
-        if (profileImage) {
-          localStorage.setItem("profileImage", profileImage);
+        const data = resultAction.payload; // 👈 response from backend
+
+        if (data?.status) {
+          // ✅ SUCCESS CASE
+          if (profileImage) {
+            localStorage.setItem("profileImage", profileImage);
+          }
+          alert("Registration Successful\nYou have successfully registered!");
+          navigate("/"); // go to login
+        } else {
+          // ❌ FAILED CASE (e.g. "User already exists")
+          const msg = data?.message || "Registration failed. Please try again.";
+          setServerMessage(msg); // show on page
+          // 👈 IMPORTANT: do NOT navigate
         }
-        alert("Registration Successful\nYou have successfully registered!");
-        navigate("/");
       } else {
-        console.error("Registration failed:", resultAction.payload || resultAction.error);
-        alert("Registration failed. Please try again.");
+        console.error(
+          "Registration failed:",
+          resultAction.payload || resultAction.error
+        );
+        setServerMessage("Registration failed. Please try again.");
       }
     } catch (err) {
       console.error("Unexpected error during registration:", err);
-      alert("Unexpected error. Please try again.");
+      setServerMessage("Unexpected error. Please try again.");
     }
   };
 
@@ -82,6 +100,13 @@ export default function Register() {
         <div className="col-md-6 p-5 bg-white d-flex flex-column justify-content-center">
           <div className="form-wrapper">
             <h2 className="text-center mb-4">Registration</h2>
+
+            {/* 🔹 Show backend message (e.g. "User already exists") */}
+            {serverMessage && (
+              <p style={{ color: "red", marginBottom: "10px", textAlign: "center" }}>
+                {serverMessage}
+              </p>
+            )}
 
             <Form onSubmit={handleSubmit}>
               {/* Name */}
