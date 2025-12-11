@@ -1,0 +1,109 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Login Test1 1`] = `
+<div>
+  <div
+    class="login-page d-flex align-items-center justify-content-center"
+  >
+    <div
+      class="login-card shadow-lg rounded overflow-hidden row"
+    >
+      <div
+        class="col-md-6 d-none d-md-block p-0"
+      >
+        <img
+          alt="Login visual"
+          class="img-fluid w-100 h-100"
+          src="test-file-stub"
+          style="object-fit: cover; height: 100%;"
+        />
+      </div>
+      <div
+        class="col-md-6 p-5 bg-white d-flex flex-column justify-content-center"
+      >
+        <div
+          class="form-wrapper"
+        >
+          <h2
+            class="text-center mb-4"
+          >
+            Login
+          </h2>
+          <form
+            class=""
+          >
+            <div
+              class="mb-3"
+            >
+              <label
+                class="form-label"
+                for="email"
+              >
+                Email
+              </label>
+              <input
+                class="form-control"
+                data-testid="login_emailBox"
+                id="email"
+                name="email"
+                placeholder="Enter your email"
+                type="email"
+                value=""
+              />
+            </div>
+            <div
+              class="mb-3"
+            >
+              <label
+                class="form-label"
+                for="password"
+              >
+                Password
+              </label>
+              <input
+                class="form-control"
+                id="password"
+                name="password"
+                placeholder="Enter your password"
+                type="password"
+                value=""
+              />
+            </div>
+            <button
+              class="mb-3 btn btn-primary d-block w-100"
+            >
+              Login
+            </button>
+            <span
+              style="color: red;"
+            />
+            <div
+              class="text-center mt-2"
+            >
+              <span>
+                Don't have an account? 
+              </span>
+              <a
+                class="signup-link"
+                href="/register"
+              >
+                Sign up
+              </a>
+            </div>
+            <div
+              class="text-center mt-2"
+            >
+              <a
+                class="signup-link"
+                href="/reset-password"
+              >
+                Forgot Password?
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
