@@ -13,10 +13,10 @@ export const RegisterDataThunk = createAsyncThunk(
   // }
 
 
-  
+
     async (userData) => {
     const serverENVURL=process.env.REACT_SERVER_RENDER_URL
-const requestToPost = await axios.post(`${serverENVURL}/register`, userData);
+const requestToPost = await Axios.post(`${serverENVURL}/register`, userData);
 
     return requestToPost.data;
   }
