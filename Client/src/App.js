@@ -1,7 +1,7 @@
 
 import './App.css';
 import LoginPage from './comps/Login';
-import { BrowserRouter, Routes, Route,Link } from "react-router-dom"
+import { BrowserRouter, Routes, Route} from "react-router-dom"
 import Register from './comps/Register.js';
 import Home from './comps/Home';
 import History from './comps/History';
