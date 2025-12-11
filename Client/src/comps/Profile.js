@@ -17,8 +17,6 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Sidebar from "./Sidebar";
-// at top
-const API_URL = "https://fullstack-server-4doi.onrender.com";
 
 export default function Profile() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -113,13 +111,11 @@ export default function Profile() {
       setLoading(true);
 
       // 🔧 Match this with your backend route
-      // UPDATE PROFILE
-      const res = await axios.put(`${API_URL}/update-profile`, {
+      const res = await axios.put("http://localhost:7500/update-profile", {
         userId,
         name,
         profileImage,
       });
-
 
       if (res.data?.status) {
         setMsgSuccess(res.data.message || "Profile updated successfully.");
@@ -161,7 +157,9 @@ export default function Profile() {
       setLoading(true);
 
       // 🔧 Match this with your backend route
-      const res = await axios.delete(`${API_URL}/delete-account/${userId}`);
+      const res = await axios.delete(
+        `http://localhost:7500/delete-account/${userId}`
+      );
 
       if (res.data?.status) {
         // Clear client-side data
