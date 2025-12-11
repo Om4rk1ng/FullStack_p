@@ -15,7 +15,7 @@ export const RegisterDataThunk = createAsyncThunk(
 
 
     async (userData) => {
-    const serverENVURL=process.env.REACT_APP_
+    const serverENVURL=process.env.REACT_APP_CONNECTION
 const requestToPost = await Axios.post(`${serverENVURL}/register`, userData);
 
     return requestToPost.data;
@@ -36,7 +36,7 @@ export const LoginThunk = createAsyncThunk(
 
 
     async (userLoginData) => {
-          const serverENVURL=process.env.REACT_APP_
+          const serverENVURL=process.env.REACT_APP_CONNECTION
 
     const requestToPost = await Axios.post(
       `${serverENVURL}/login`,
