@@ -16,7 +16,7 @@ export default function Register() {
   const [gender, setGender] = useState("");
   const [specialization, setSpecialization] = useState("");
 
-  // 🔹 NEW: to show backend message like "User already exists"
+  // NEW: to show backend message like "User already exists"
   const [serverMessage, setServerMessage] = useState("");
 
   const navigate = useNavigate();
@@ -55,20 +55,17 @@ export default function Register() {
       const resultAction = await dispatch(RegisterDataThunk(newUserRegisterData));
 
       if (RegisterDataThunk.fulfilled.match(resultAction)) {
-        const data = resultAction.payload; // 👈 response from backend
+        const data = resultAction.payload; 
 
         if (data?.status) {
-          // ✅ SUCCESS CASE
           if (profileImage) {
             localStorage.setItem("profileImage", profileImage);
           }
           alert("Registration Successful\nYou have successfully registered!");
           navigate("/"); // go to login
         } else {
-          // ❌ FAILED CASE (e.g. "User already exists")
           const msg = data?.message || "Registration failed. Please try again.";
-          setServerMessage(msg); // show on page
-          // 👈 IMPORTANT: do NOT navigate
+          setServerMessage(msg); 
         }
       } else {
         console.error(
@@ -101,7 +98,7 @@ export default function Register() {
           <div className="form-wrapper">
             <h2 className="text-center mb-4">Registration</h2>
 
-            {/* 🔹 Show backend message (e.g. "User already exists") */}
+            {/* Show backend message (e.g. "User already exists") */}
             {serverMessage && (
               <p style={{ color: "red", marginBottom: "10px", textAlign: "center" }}>
                 {serverMessage}

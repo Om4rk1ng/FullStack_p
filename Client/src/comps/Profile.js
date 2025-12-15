@@ -110,7 +110,7 @@ export default function Profile() {
     try {
       setLoading(true);
 
-      // 🔧 Match this with your backend route
+      // Match this with your backend route
       const res = await axios.put("http://localhost:7500/update-profile", {
         userId,
         name,
@@ -156,7 +156,7 @@ export default function Profile() {
     try {
       setLoading(true);
 
-      // 🔧 Match this with your backend route
+      // Match this with your backend route
       const res = await axios.delete(
         `http://localhost:7500/delete-account/${userId}`
       );

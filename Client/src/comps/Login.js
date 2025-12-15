@@ -36,7 +36,7 @@ export default function Login() {
       const data = resultAction.payload;
 
       if (data?.status) {
-        // ✅ SUPPORT BOTH BACKEND FORMATS
+        // SUPPORT BOTH BACKEND FORMATS
         const user = data.user || data;
 
         if (!user) {
