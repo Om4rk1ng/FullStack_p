@@ -79,7 +79,7 @@ export default function Login() {
         <div className="col-md-6 p-5 bg-white d-flex flex-column justify-content-center">
           <div className="form-wrapper">
             <h2 className="text-center mb-4">Login</h2>
-            <Form onSubmit={handleSubmit}>
+            <Form>
               <FormGroup>
                 <Label for="email">Email</Label>
                 <Input
@@ -105,7 +105,7 @@ export default function Login() {
                 />
               </FormGroup>
 
-              <Button color="primary" block className="mb-3">
+              <Button onClick={handleSubmit} color="primary" block className="mb-3">
                 Login
               </Button>
 
