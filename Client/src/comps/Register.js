@@ -55,7 +55,7 @@ export default function Register() {
       specialization: "",
     });
 
-    // Validate all fields and collect all errors
+    // ✅ Validate all fields and collect all errors
     try {
       await registerSchema.validate(
         { name, email, password, gender, specialization },
@@ -136,7 +136,7 @@ export default function Register() {
               </p>
             )}
 
-            <Form>
+            <Form onSubmit={handleSubmit}>
               <FormGroup>
                 <Label htmlFor="name">Name</Label>
                 <Input
@@ -231,7 +231,7 @@ export default function Register() {
                 )}
               </FormGroup>
 
-              <Button onClick={handleSubmit} type="submit" color="primary" block className="mb-3 mt-3">
+              <Button type="submit" color="primary" block className="mb-3 mt-3">
                 Register
               </Button>
 
